@@ -1,0 +1,8 @@
+title = "Bestatic | The Best Static Site Generator!"
+description = "A demo site for Bestatic"
+theme = "Amazing"
+number_of_pages = 2 # Enter Number of blog pages to pagniate blog posts
+ugly_url = false
+[disqus]
+    enabled = true
+    disqusShortname = "demo-static"

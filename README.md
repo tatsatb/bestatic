@@ -1,2 +1,64 @@
-# bestatic
-GitHub repo for Bestatic, a static-site generator, written in Python and Jinja2. 
+# Bestatic
+
+Bestatic is a static-site generator, written in Python and Jinja2 templating engine. 
+It is truly minimal, yet fully-featured. Like every other static-site generator,
+it can generate a complete website by processing a bunch of markdown files. As a result, 
+it eliminates the need for server-side programming or databases. The site _Bestatic_ generates
+in ````_output```` folder can be served from any web server or host (or even GitHub pages or GitLab pages). 
+
+Some salient features of _Bestatic_ that are probably worth highlighting:
+
+:heavy_check_mark: Blog-aware. You can create your blog/news page along with your website and expect all the standard 
+good stuff. Posts will be listed in the reverse chronological order. You can also control number of posts per page. 
+
+:heavy_check_mark: Tags and URL customizations are supported for the posts out-of-the-box. 
+
+:heavy_check_mark: Different description tag for each page of the website (SEO friendly).
+
+:heavy_check_mark: `LaTeX` support is available out-of-the-box.
+
+:heavy_check_mark: Search functionality has been implemented using `Fuse.js` library which enables client-side fuzzy
+(approximate string matching) search. No action is required from user-end: Whenever the user adds new content and 
+complies the website, it automatically generates a new search index. 
+
+:heavy_check_mark: Pre-built site themes (created using Jinja2 template engine, more will be added later; you can add your own as well). 
+
+:heavy_check_mark: Syntax-highlighting for codes is available out-of-the-box.
+
+:heavy_check_mark: Disqus comments are supported.
+
+:heavy_check_mark: A simple web server has been included which enables viewing all the changes in the site instantly. 
+
+:heavy_check_mark: Guided quick-start from the command-line. 
+
+
+:heavy_check_mark: Configurable via a `config.toml` file.
+
+## Installation
+
+There are several ways to install _Bestatic_. The [GitHub repo](https://github.com/tatsatb/bestatic) will be updated 
+with more details. For now, please use pip/pipx for installation.
+
+### Using pipx (recommended)
+
+If you have not already installed it, please install pipx first using 
+[official documentation](https://pipx.pypa.io/stable/installation/), as per your OS platform. Next, just use this
+following command to install Bestatic. 
+
+> pipx install Bestatic
+
+### Using pip
+
+If you are on Linux (Ubuntu/Debian) please use this: 
+
+    sudo apt update && sudo apt upgrade
+    sudo apt install python3-venv
+    python3 -m venv ~/.virtualenvs/bestatic
+    source ~/.virtualenvs/bestatic/bin/activate
+    pip install Bestatic
+
+Similar commands can be used to create virtual environment in Windows or mac OS. Bestatic can also be installed
+inside a conda environment. 
+
+
+
