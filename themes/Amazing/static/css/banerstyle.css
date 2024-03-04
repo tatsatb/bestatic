@@ -1,0 +1,305 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,700,700italic);
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700);
+@import url(https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700);
+
+
+.sticky{
+position: sticky;
+top: 0;
+left: 0;
+bottom: 0;
+margin-top: 0;
+margin-bottom: 0;
+z-index: 2;
+}
+.search-results{
+position: sticky !important;
+top: 50px;
+left: 0;
+bottom: 0;
+/*margin-top: 0;*/
+/*margin-bottom: 0;*/
+margin: auto;
+z-index: 1;
+width: 80%;
+/*padding-top: 2em;*/
+max-height: 300px; /* Set your desired height */
+overflow-y: auto;
+overflow-x: hidden; /* Add vertical scroll if content exceeds the height */
+}
+
+@media (max-width: 576px) {
+  /* For screens smaller than 768px */
+  .search-results {
+    position: sticky !important; /* Change to absolute on smaller screens */
+    z-index: 3; /* Increase z-index on smaller screens */
+  }
+}
+
+@media (min-width: 576px) {
+  /* For screens larger than or equal to 768px */
+  .search-results {
+    position: relative; /* Set back to relative on larger screens */
+    z-index: 1; /* Reduce z-index on larger screens */
+  }
+}
+
+.search-results b {
+  background-color: #63e863;
+}
+
+.search-results a:link {
+  color: #d6dcd6;
+}
+
+.search-results a:hover {
+  color: #2b7aec;
+}
+
+.search-results a:visited {
+  /* color: #666099 ; */
+  color: #20b8c4;
+}
+
+.container-fluid{
+padding-left: 0 !important;
+padding-right: 0 !important;
+}
+
+
+a:link {
+  color: #484562;
+}
+
+
+a:visited {
+  /* color: #666099 ; */
+  color: #484562;
+}
+
+/* mouse over link */
+a:hover {
+  color: #0d81fe;
+  
+}
+
+a{
+font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+li:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+
+
+.myptag{
+  color: #857b99;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+p{
+  color: #7a7288;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.myptagnew{
+  margin: 5px;
+  color: #000000;
+  font-size: 28px; 
+}
+
+.myreadmore{
+  margin: 5px;
+  color: #000000;
+  font-size: 20px;
+}
+
+.nextpage{
+  color: #4c7ae5 !important;
+  font-size: 16px;
+  float:right;
+}
+
+.prevpage{
+  color: #34692f !important;
+  font-size: 16px;
+  text-align: left;
+}
+
+.headercool{
+  /*background-color: #eaefff; */  
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f7fffb+35,dbeeff+75 */
+  /* background: rgb(247,255,251); /* Old browsers */
+  /* background: -moz-radial-gradient(center, ellipse cover, rgba(247,255,251,1) 35%, rgba(219,238,255,1) 75%);  FF3.6-15 */
+  background: -webkit-radial-gradient(center, ellipse cover, rgba(247,255,251,1) 35%,rgba(219,238,255,1) 75%); /* Chrome10-25,Safari5.1-6 */
+  background: radial-gradient(ellipse at center, rgba(247,255,251,1) 35%,rgba(219,238,255,1) 75%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7fffb', endColorstr='#dbeeff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    /* padding-top: 3em;
+    /* padding-bottom: 2.5em; */
+  z-index: 1;
+  }
+
+
+.mynav{
+background: black;  
+font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1rem;
+  line-height: 2.4;
+  letter-spacing: 0;
+  text-transform: none;
+  
+}
+
+
+.nav-link{
+color: #e2e5fa !important; 
+font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.nav-link:visited{
+  color: #e2e5fa; 
+  }
+
+.nav-link:hover {
+  color: #7b779c !important;
+}
+
+
+.polaroid {
+  position: static;
+  width: 355px;
+}
+
+.polaroid img {
+  border: 10px solid #edeef3;
+  border-bottom: 70px solid #eaedf1;
+  -webkit-box-shadow: 8.5px 25px 35px #777;
+     -moz-box-shadow: 8.5px 25px 35px #777;
+          box-shadow: 8.5px 25px 35px #777;
+}
+
+.polaroid p {
+  position: relative;
+  text-align: center;
+  width: 100%;
+  bottom: 5000px;
+  font: 400 18px/1 'Kaushan Script', cursive;
+  color: #7a7878;
+}
+
+
+.mymarginleft {
+  padding-left: 30px !important;
+}
+
+.mymarginright {
+  padding-right: 30px !important;
+}
+
+
+blockquote{
+  border-left: 1px solid #bbbab3;
+  color: #212522;
+  font-style: italic;
+
+  margin: 0 0 1.25rem;
+  padding: 0.5625rem 1.25rem 0 1.1875rem;
+  border-left: 1.4px solid #585555;
+
+  display: block;
+  font-size: 0.99rem !important;
+  /*color: #515b54;*/
+  color: #9995be;
+
+
+}
+
+blockquote cite:before { content: "\2014 \0020"; }
+
+.tbcite {
+  display: block;
+  font-size: 0.99rem;
+  /* color: #07f84f; */
+  color: #9995be;
+  
+}
+
+.tbcite a:link {
+  color: #484562;
+}
+
+.tbcite a:visited {
+  color: #565279;
+}
+
+.tbcite a:hover {
+  color: #0d81fe;
+}
+
+
+.tbh2{
+  
+  font-family:'Libre Baskerville', serif;;
+  font-weight: 700;
+  font-style: bold;
+  line-height: 1.4;
+  
+  
+}
+
+.tbh3{
+  
+  font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  font-style: normal;
+  line-height: 1.4;
+  
+  
+}
+
+.tbh4{
+  
+  font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 350;
+  font-style: normal;
+  line-height: 1.4;
+  
+  
+}
+
+.code{
+  color: #1fe11f; !important;
+  background-color: #f2efe7;
+}
+
+
+.bg-tbbg{
+
+  background-color: #f2efe7;
+
+}
+
+
+
+#search-input {
+  width: 100%;
+  font-size: 1.1em;
+  padding: 0.2em;
+  color: blue !important;
+  background-color: #ffffff;
+}
+
+.search-preview {
+  margin-left: 2em;
+}
+/*.single .main a, .single .main h2 {*/
+/*  border-bottom: 2px;*/
+/*}*/
+
+
+
+
+
