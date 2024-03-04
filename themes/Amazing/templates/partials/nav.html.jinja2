@@ -11,11 +11,11 @@
 
                     {% for item in navi.values() %}
                 <li class="nav-item ps-3">
-                    <a class="nav-link" href="{{ root_path }}/{{ item["slug"] }}{{ extension }}">{{ item["title"] }}</a>
+                    <a class="nav-link" href="{{ root_path }}/{{ item["slug"] }}">{{ item["title"] }}</a>
                 </li>
                     {% endfor %}
                 <li class="nav-item ps-3">
-                    <a class="nav-link" href="{{ root_path }}/posts{{ extension }}">Blog</a>
+                    <a class="nav-link" href="{{ root_path }}/posts">Blog</a>
                 </li>
                 <li class="nav-item ps-3">
                           <form class="d-flex">
