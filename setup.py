@@ -22,7 +22,7 @@ setup(
         'tomli == 2.0.1',
         'tomli_w == 1.0.0'
     ],
-    python_requires=">=3.10",
+    python_requires=">=3.8",
     entry_points={
         'console_scripts': [
             'bestatic = bestatic.bestatic:main'

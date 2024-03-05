@@ -2,6 +2,10 @@
 {% set css_path = "./static/css" %}
 {% set Image_path = "./static/Images" %}
 {% set root_path = "." %}
+{% elif typeof == "tags" %}
+{% set css_path = "../../static/css" %}
+{% set Image_path = "../../static/Images" %}
+{% set root_path = "../.." %}
 {% else %}
 {% set css_path = "../static/css" %}
 {% set Image_path = "../static/Images" %}

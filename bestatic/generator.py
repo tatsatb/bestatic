@@ -11,6 +11,7 @@ def generator(**config):
     import re
     from bs4 import BeautifulSoup
     import json
+    from bestatic import bestaticSitemap
 
     def isolate_tags(taglist):
         taglist_2 = re.split(r'\s|(?<!\d)[,.]|,.', taglist)
@@ -81,14 +82,17 @@ def generator(**config):
                 if "katex" in self.metadata and "katex":
                     self.katex = True
 
+    siteURL = config["siteURL"]
     site_title = config["title"] if config and "title" in config else "A Demo Site for Bestatic"
     site_description = config["description"] if config and "description" in config else "A Demo Site for Bestatic"
     theme_name = config["theme"] if config and "theme" in config else "Amazing"
     current_directory = os.getcwd()
-    shutil.rmtree(os.path.join(current_directory, "_output"))
+    shutil.rmtree(os.path.join(current_directory, "_output")) if os.path.exists(
+        os.path.join(current_directory, "_output")) else None
     working_directory = os.path.join(current_directory, "themes", theme_name)
     format_files = False if config and "ugly_url" in config and config["ugly_url"] is True else True
     extension = "" if format_files else ".html"
+    json_extension = ""
 
     source = os.path.join(working_directory, "static")
     destination = os.path.join(current_directory, "_output", "static")
@@ -198,7 +202,7 @@ def generator(**config):
     Tag_list_final = isolate_tags(Tag_list_temp)
 
     for tags in Tag_list_final:
-        output_tag_path = f'_output/post/{tags}{extension}'
+        output_tag_path = f'_output/post/tags/{tags}{extension}'
         POSTS_tag = {}
         for item in POSTS_SORTED:
             tags_in_post_correct = POSTS_SORTED[item].tags
@@ -207,7 +211,7 @@ def generator(**config):
                 POSTS_tag[item] = POSTS[item]
 
         tag_page_final = tags_template.render(title=site_title, description=site_description,
-                                              post=POSTS_tag, typeof="posts", tags=tags, extension=extension,
+                                              post=POSTS_tag, typeof="tags", tags=tags, extension=extension,
                                               navi=navigation_items)
         os.makedirs(os.path.dirname(output_tag_path), exist_ok=True)
         with open(output_tag_path, 'w', encoding="utf-8") as file:
@@ -222,19 +226,29 @@ def generator(**config):
 
     json_combined_dict = {**json_dict_post, **json_dict_page}
 
-    result_dict = [{'uri': f"{value['slug']}{extension}", 'title': value['title'], 'content': value['text']} for value
+    result_dict = [{'uri': f"{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
+                   value
                    in
                    json_combined_dict.values()]
 
-    result_dict_post = [{'uri': f"../{value['slug']}{extension}", 'title': value['title'], 'content': value['text']} for
-                        value in
-                        json_combined_dict.values()]
+    result_dict_post = [
+        {'uri': f"../{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
+        value in
+        json_combined_dict.values()]
+
+    result_dict_tags = [
+        {'uri': f"../../{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
+        value in
+        json_combined_dict.values()]
 
     json_data = json.dumps(result_dict, indent=2)
     json_data_post = json.dumps(result_dict_post, indent=2)
 
     json_data_processing(result_dict, f'_output/index.json')
     json_data_processing(result_dict_post, f'_output/post/index.json')
+    json_data_processing(result_dict_tags, f'_output/post/tags/index.json')
+
+    bestaticSitemap.generate_sitemap(siteURL, "_output")
 
     return None
 
