@@ -12,10 +12,10 @@ def quickstart(*theme):
     is_exist = os.path.exists(path)
 
     if not is_exist:
-        raise FileNotFoundError(f"Theme directory does not exist! Please make sure a theme is present in themes"
-                                f" directory")
+        raise FileNotFoundError(f"Theme directory does not exist! Please make sure a proper theme is present in themes directory")
 
     config_dict = {
+        "siteURL": "http://example.org",
         "title": input("Enter the title of the website: "),
         "description": input("Enter the description of the website: "),
         "theme": theme,
