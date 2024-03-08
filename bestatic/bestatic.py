@@ -46,11 +46,12 @@ def main():
             raise FileNotFoundError(f"Theme directory does not exist! Please make sure a proper theme is present in themes directory")
         generator(**config)
 
-    if args.serve:
-        bestatic_serv()
-
     if args.directory:
         os.rename("_output", args.directory)
+
+    if args.serve:
+        bestatic_serv(args.directory) if args.directory else bestatic_serv()
+
 
 if __name__ == '__main__':
     main()

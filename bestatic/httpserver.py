@@ -1,9 +1,9 @@
-def bestatic_serv():
+def bestatic_serv(*directory):
     import http.server
     import socketserver
 
     PORT = 8080
-    DIRECTORY = "_output"
+    DIRECTORY = directory if directory else "_output"
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         extensions_map = {
