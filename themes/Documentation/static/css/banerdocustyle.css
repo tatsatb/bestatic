@@ -1,0 +1,161 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,700,700italic);
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700);
+@import url(https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700);
+@import url(https://fonts.googleapis.com/css2?family=Zen+Antique+Soft:wght@400);
+
+.stickymain{
+	position: sticky !important;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+	z-index: 4 !important;
+	}
+
+.stickydoc{
+	position: sticky !important;
+	top: 60px;
+	left: 0;
+	bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+	z-index: 1 !important;
+	max-height: 800px; /* Set your desired height */
+overflow-y: auto;
+overflow-x: hidden;
+
+	}
+
+.main-link{
+
+    font-weight: bold;
+}
+
+.navbar-brand {
+	font-family: "Zen Antique Soft", serif;
+	font: size 98px;;
+	font-style: normal;
+  }
+
+  .side-link.active {
+	font-weight: bold;
+	/* color: #f00 !important; Red color for active link */
+  }
+
+header{
+	
+	font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 1.8rem;
+	font-weight: 1000;
+	font-style: normal;
+	line-height: 2.1;
+		
+}
+	  
+
+.tbh2{
+  
+	font-family:'Libre Baskerville', serif;;
+	font-weight: 700;
+	font-style: bold;
+	line-height: 1.4;
+	
+	
+  }
+  
+  .tbh3{
+	
+	font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 1.4;
+	
+	
+  }
+  
+  .tbh4{
+	
+	font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 350;
+	font-style: normal;
+	line-height: 1.4;
+	
+	
+  }
+
+  p{
+	color: #7a7288;
+	font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+a.side-link.active{
+	background-color: rgba(9, 75, 167, 0.5) !important;
+	/* color: #7a7288 !important; */
+}
+
+.search-results{
+position: sticky !important;
+top: 50px;
+left: 0;
+bottom: 0;
+/*margin-top: 0;*/
+/*margin-bottom: 0;*/
+margin-left: auto;
+margin-right: 0;
+z-index: 1;
+width: 100%;
+/*padding-top: 2em;*/
+max-height: 400px; /* Set your desired height */
+overflow-y: auto;
+overflow-x: hidden; /* Add vertical scroll if content exceeds the height */
+}
+
+@media (max-width: 576px) {
+  /* For screens smaller than 768px */
+  .search-results {
+    position: sticky !important; /* Change to absolute on smaller screens */
+    z-index: 4; /* Increase z-index on smaller screens */
+  }
+}
+
+@media (min-width: 576px) {
+  /* For screens larger than or equal to 768px */
+  .search-results {
+    position: relative; /* Set back to relative on larger screens */
+    z-index: 3; /* Reduce z-index on larger screens */
+  }
+}
+
+.search-results b {
+  background-color: #63e863;
+}
+
+.search-results a:link {
+  color: #d6dcd6;
+}
+
+.search-results a:hover {
+  color: #2b7aec;
+}
+
+.search-results a:visited {
+  /* color: #666099 ; */
+  color: #20b8c4;
+}
+
+
+#search-input {
+  width: 100%;
+  font-size: 1.1em;
+  padding: 0.2em;
+  color: blue !important;
+  background-color: #ffffff;
+}
+
+.search-preview {
+  margin-left: 2em;
+}
+/*.single .main a, .single .main h2 {*/
+/*  border-bottom: 2px;*/
+/*}*/

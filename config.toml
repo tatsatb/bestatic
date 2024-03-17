@@ -1,7 +1,7 @@
 siteURL = "http://example.org" # Do not use a training slash
 title = "Bestatic | The Best Static Site Generator!"
 description = "A demo site for Bestatic"
-theme = "Amazing"
+theme = "Documentation"
 number_of_pages = 4 # Enter Number of blog pages to pagniate blog posts
 ugly_url = false
 [disqus]

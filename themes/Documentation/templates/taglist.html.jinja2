@@ -1,0 +1,26 @@
+{% extends "layout.html.jinja2" %}
+{% block title %}Tags Page | {{ tags }} | {{ title}} {% endblock %}
+{% block content %}
+
+
+
+
+<h2 class="tbh2"><br/>Blog Page | Tag: {{ tags }}</h2>
+<br>
+
+
+<br><br>
+          {% for name in post %}
+        <h3 class="tbh3">{{ post[name].metadata["title"] }}</h3>
+          <p class="myptag">Posted on {{ post[name].metadata["date"] }}</p>
+        <p>{{ post[name].summary }}</p></ul>
+        <p class="myreadmore"><a href="{{ root_path }}/post/{{ post[name].slug }}{{extension}}">Read More</a></p>
+        <br><br>
+        {% endfor %}
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,127 @@
+<div class="stickymain">
+	<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #9bebfbfd;">
+		<div class="container-fluid">
+		  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+		  <a class="navbar-brand" href="#">docs.Bestatic</a>
+		  <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo04" aria-controls="navbarTogglerDemo04" aria-expanded="false" aria-label="Toggle navigation" id="scrollToTopButton">Toggle List of Contents
+		</button>
+
+		  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+			  <li class="nav-item">
+				<a class="nav-link active" aria-current="page" href="#">Home</a>
+			  </li>
+			  <li class="nav-item">
+				<a class="nav-link" href="#">Link</a>
+			  </li>
+			  <li class="nav-item">
+				<a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+			  </li>
+			</ul>
+			<form class="d-flex">
+			  <input class="form-control me-2" type="search" placeholder="Search the docs" aria-label="Search" id="search-input">
+			  <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
+			</form>
+		  </div>
+		</div>
+	  </nav>
+	</div>
+
+<div class="search-results" id="search-container">
+    <div id = "divToHide">
+<div class="row">
+
+      <div class="col-sm-12  col-md-9 offset-md-2 col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
+<section>
+<h4><a target="_blank"></a></h4>
+<div class="search-preview"></div>
+</section>
+</div>
+</div>
+        </div>
+</div>
+
+<script>
+        const searchInput = document.getElementById('search-input');
+        const searchContainer = document.getElementById('search-container');
+
+        searchInput.addEventListener('input', () => {
+            // Check if the search input has a value (i.e., user is typing)
+            if (searchInput.value.trim()) {
+                searchContainer.style.border = '0px solid #b36919';
+                searchContainer.style.color = '#ffffff';
+                searchContainer.style.backgroundColor = '#373a44';
+            } else {
+                searchContainer.style.border = 'none'; // No border when no input
+                searchContainer.style.backgroundColor = 'transparent'; // No background color
+            }
+        });
+
+    </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2" defer></script>
+<script src="{{root_path}}/static/js/fuse-search.js" defer></script>
+
+
+	<div class="container">
+
+		<div class="row">
+
+			<div class="col-md-4 col-sm-12">
+
+			<div class="stickydoc">
+
+				<div class=class="collapse navbar-collapse" id="navbarTogglerDemo04">
+				<nav id="navbar-example" class="navbar navbar-light flex-column align-items-stretch p-3 bg-light">
+					<a class="navbar-brand" href="#">Content</a>
+					<nav class="nav nav-pills flex-column">
+					<a class="nav-link main-link side-link" href="index.html">Welcome</a>
+					<a class="nav-link main-link" href="#Object">Quickstart</a>
+					<a class="nav-link main-link" href="#Object">Installation</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="#Intro">Windows</a>
+						<a class="nav-link ms-3" href="#Inheritance"> Linux</a>
+						<a class="nav-link ms-3" href="#Inheritance"> Using pipx</a>
+						<a class="nav-link ms-3" href="#Inheritance"> Using pip</a>
+					</nav>
+					<a class="nav-link main-link" href="#Polymorphism">Content Management</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="#Encapsulation">Templating Basics</a>
+						<a class="nav-link ms-3" href="#Encapsulation">Craeting a Blog</a>
+						<a class="nav-link ms-3" href="#item-3-2">Pagination</a>
+						<a class="nav-link ms-3" href="#item-3-2">Comments</a>
+						<a class="nav-link ms-3" href="#item-3-2">Search</a>
+						<a class="nav-link ms-3" href="#item-3-2">Sitemap</a>
+						<a class="nav-link ms-3" href="#item-3-2">Configuration file</a>
+
+
+					</nav>
+					<a class="nav-link main-link" href="#Polymorphism">Command Line Options</a>
+					<a class="nav-link main-link" href="#Abstraction">Themes</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="#Encapsulation">Using a theme</a>
+						<a class="nav-link ms-3" href="#item-3-2">Creating a theme</a>
+					</nav>
+					<a class="nav-link main-link" href="#Abstraction">Deployment</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="#Encapsulation">GitHub pages</a>
+						<a class="nav-link ms-3" href="#item-3-2">GitLab pages</a>
+						<a class="nav-link ms-3" href="#item-3-2">Cloudflare pages</a>
+						<a class="nav-link ms-3" href="#item-3-2">Netlify</a>
+						<a class="nav-link ms-3" href="#item-3-2">Vercel</a>
+						<a class="nav-link ms-3" href="#item-3-2">Render</a>
+						<a class="nav-link ms-3" href="#item-3-2">Manual Deployment</a>
+					</nav>
+
+					</nav>
+				</nav>
+			</div>
+			</div>
+			</div>
+
+
+
+

@@ -82,13 +82,15 @@ def generator(**config):
                 if "katex" in self.metadata and "katex":
                     self.katex = True
 
-    siteURL = config["siteURL"]
+    siteURL = config["siteURL"] if config and "siteURL" in config else "https://example.org"
     site_title = config["title"] if config and "title" in config else "A Demo Site for Bestatic"
     site_description = config["description"] if config and "description" in config else "A Demo Site for Bestatic"
     theme_name = config["theme"] if config and "theme" in config else "Amazing"
     current_directory = os.getcwd()
+
     shutil.rmtree(os.path.join(current_directory, "_output")) if os.path.exists(
         os.path.join(current_directory, "_output")) else None
+
     working_directory = os.path.join(current_directory, "themes", theme_name)
     format_files = False if config and "ugly_url" in config and config["ugly_url"] is True else True
     extension = "" if format_files else ".html"
@@ -107,13 +109,15 @@ def generator(**config):
     POSTS = {}
     PAGES = {}
 
-    for post_counter in os.listdir('posts'):
-        input_post_path = os.path.join('posts', post_counter)
-        POSTS[post_counter] = Parsing(input_post_path)
+    if os.path.isdir('posts') and len(os.listdir('posts')):
+        for post_counter in os.listdir('posts'):
+            input_post_path = os.path.join('posts', post_counter)
+            POSTS[post_counter] = Parsing(input_post_path)
 
-    for page_counter in os.listdir('pages'):
-        input_page_path = os.path.join('pages', page_counter)
-        PAGES[page_counter] = Parsing(input_page_path)
+    if os.path.isdir('pages') and len(os.listdir('pages')):
+        for page_counter in os.listdir('pages'):
+            input_page_path = os.path.join('pages', page_counter)
+            PAGES[page_counter] = Parsing(input_page_path)
 
     navigation_items = {key: {"title": value.title, "slug": value.slug} for key, value in PAGES.items() if
                         key != "404.md"}
@@ -123,130 +127,158 @@ def generator(**config):
     env.trim_blocks = True
     env.lstrip_blocks = True
 
-    home_template = env.get_template('home.html.jinja2')
-    page_template = env.get_template('page.html.jinja2')
-    post_template = env.get_template('post.html.jinja2')
-    error_template = env.get_template('404.html.jinja2')
-    list_template = env.get_template('list.html.jinja2')
-    tags_template = env.get_template('taglist.html.jinja2')
+    home_template = None
+    page_template = None
+    post_template = None
+    error_template = None
+    list_template = None
+    tags_template = None
 
-    home_final = home_template.render(title=site_title, description=site_description,
-                                      typeof="home", extension=extension, navi=navigation_items)
-    with open(f"_output/index.html", "w", encoding="utf-8") as file:
-        file.write(home_final)
 
-    for page in PAGES:
+    if os.path.exists(os.path.join(working_directory, "templates", "home.html.jinja2")):
+        home_template = env.get_template('home.html.jinja2')
+        home_final = home_template.render(title=site_title, description=site_description,
+                                          typeof="home", extension=extension, navi=navigation_items)
+        with open(f"_output/index.html", "w", encoding="utf-8") as file:
+            file.write(home_final)
 
-        output_page_path = '_output/{slug}{extension}'.format(slug=PAGES[page].slug, extension=extension)
+    if os.path.isdir('pages') and len(os.listdir('pages')):
+        try:
+            page_template = env.get_template('page.html.jinja2')
+        except FileNotFoundError:
+            raise Exception("The 'page.html.jinja2' template must exist in the theme directory to process static pages.")
+    if os.path.exists(os.path.join(working_directory, "templates", "404.html.jinja2")):
+        error_template = env.get_template('404.html.jinja2')
 
-        if PAGES[page].metadata['slug'] == 404:
-            page_final = error_template.render(title=site_title, description=site_description,
-                                               typeof="pages", extension=extension, navi=navigation_items)
-        else:
-            page_final = page_template.render(title=site_title, description=site_description,
-                                              page=PAGES[page], typeof="pages", extension=extension,
-                                              navi=navigation_items)
+    if page_template:
+        for page in PAGES:
 
-        os.makedirs(os.path.dirname(output_page_path), exist_ok=True)
-        with open(output_page_path, 'w', encoding="utf-8") as file:
-            file.write(page_final)
+            output_page_path = '_output/{slug}{extension}'.format(slug=PAGES[page].slug, extension=extension)
 
-    POSTS_SORTED_LIST = sorted(POSTS, key=lambda sorter: datetime.strptime(POSTS[sorter].metadata["date"],
-                                                                           "%B %d, %Y"), reverse=True)
-    # POSTS_SORTED = {}
-    POSTS_SORTED = {item: POSTS[item] for item in POSTS_SORTED_LIST}
-    # for item in POSTS_SORTED_LIST:
-    #     POSTS_SORTED[item] = POSTS[item]
+            if PAGES[page].metadata['slug'] == 404 and error_template:
+                page_final = error_template.render(title=site_title, description=site_description,
+                                                   typeof="pages", extension=extension, navi=navigation_items)
+            else:
+                page_final = page_template.render(title=site_title, description=site_description,
+                                                  page=PAGES[page], typeof="pages", extension=extension,
+                                                  navi=navigation_items)
 
-    POSTS_SORTED_temp = copy.deepcopy(POSTS_SORTED)
-    POSTS_SORTED_temp.pop(next(iter(POSTS_SORTED_temp)))
+            os.makedirs(os.path.dirname(output_page_path), exist_ok=True)
+            with open(output_page_path, 'w', encoding="utf-8") as file:
+                file.write(page_final)
 
-    next_slugs_list = []
-    for post in POSTS_SORTED_temp:
-        next_slugs_list.append(POSTS_SORTED[post].metadata["slug"])
 
-    prev_slug = None
+    if os.path.isdir('posts') and len(os.listdir('posts')):
+        try:
+            post_template = env.get_template('post.html.jinja2')
+            list_template = env.get_template('list.html.jinja2')
+            tags_template = env.get_template('taglist.html.jinja2')
+        except FileNotFoundError:
+            raise Exception("The 'post', 'list', and 'taglist' template must exist in the templates directory of "
+                            "theme root directory to process the blog/posts/news items.")
 
-    user_input_n = config['number_of_pages'] if config and "number_of_pages" in config else 4
-    disqus = config["disqus"]["disqusShortname"] \
-        if config and "disqus" in config and config["disqus"]["enabled"] is True else False
 
-    for ii, (post, value) in enumerate(POSTS_SORTED.items()):
-        output_post_path = '_output/post/{slug}{extension}'.format(slug=POSTS_SORTED[post].slug,
-                                                                   extension=extension)
-        tags_in_post_individual = POSTS_SORTED[post].tags
-        next_slug = next_slugs_list[ii] if ii < len(next_slugs_list) else None
-        post_final = post_template.render(title=site_title, description=site_description,
-                                          post=POSTS_SORTED[post], typeof="posts", next_slug=next_slug,
-                                          prev_slug=prev_slug,
-                                          disqus=disqus, extension=extension, navi=navigation_items)
-        prev_slug = POSTS_SORTED[post].slug
-        os.makedirs(os.path.dirname(output_post_path), exist_ok=True)
-        with open(output_post_path, 'w', encoding="utf-8") as file:
-            file.write(post_final)
+    if post_template:
 
-    split_dicts = split_dict_into_n(POSTS_SORTED, user_input_n)
+        POSTS_SORTED_LIST = sorted(POSTS, key=lambda sorter: datetime.strptime(POSTS[sorter].metadata["date"],
+                                                                               "%B %d, %Y"), reverse=True)
+        # POSTS_SORTED = {}
+        POSTS_SORTED = {item: POSTS[item] for item in POSTS_SORTED_LIST}
+        # for item in POSTS_SORTED_LIST:
+        #     POSTS_SORTED[item] = POSTS[item]
 
-    for jj in range(len(split_dicts)):
-        list_final = list_template.render(title=site_title, description=site_description,
-                                          post=split_dicts[jj], page_index=jj, page_range=len(split_dicts),
-                                          typeof="lists",
-                                          extension=extension, navi=navigation_items)
-        paginator = "_output/posts" + str(jj + 1) + extension if jj != 0 else "_output/posts" + extension
-        with open(paginator, 'w', encoding="utf-8") as file:
-            file.write(list_final)
+        POSTS_SORTED_temp = copy.deepcopy(POSTS_SORTED)
+        POSTS_SORTED_temp.pop(next(iter(POSTS_SORTED_temp)))
 
-    Tag_list = [POSTS_SORTED[item].metadata["tags"] for item in POSTS_SORTED]
-    Tag_list_temp = " ".join(Tag_list)
+        next_slugs_list = []
+        for post in POSTS_SORTED_temp:
+            next_slugs_list.append(POSTS_SORTED[post].metadata["slug"])
 
-    Tag_list_final = isolate_tags(Tag_list_temp)
+        prev_slug = None
 
-    for tags in Tag_list_final:
-        output_tag_path = f'_output/post/tags/{tags}{extension}'
-        POSTS_tag = {}
-        for item in POSTS_SORTED:
-            tags_in_post_correct = POSTS_SORTED[item].tags
+        user_input_n = config['number_of_pages'] if config and "number_of_pages" in config else 4
+        disqus = config["disqus"]["disqusShortname"] \
+            if config and "disqus" in config and config["disqus"]["enabled"] is True else False
 
-            if tags in tags_in_post_correct:
-                POSTS_tag[item] = POSTS[item]
+        for ii, (post, value) in enumerate(POSTS_SORTED.items()):
+            output_post_path = '_output/post/{slug}{extension}'.format(slug=POSTS_SORTED[post].slug,
+                                                                       extension=extension)
+            tags_in_post_individual = POSTS_SORTED[post].tags
+            next_slug = next_slugs_list[ii] if ii < len(next_slugs_list) else None
+            post_final = post_template.render(title=site_title, description=site_description,
+                                              post=POSTS_SORTED[post], typeof="posts", next_slug=next_slug,
+                                              prev_slug=prev_slug,
+                                              disqus=disqus, extension=extension, navi=navigation_items)
+            prev_slug = POSTS_SORTED[post].slug
+            os.makedirs(os.path.dirname(output_post_path), exist_ok=True)
+            with open(output_post_path, 'w', encoding="utf-8") as file:
+                file.write(post_final)
 
-        tag_page_final = tags_template.render(title=site_title, description=site_description,
-                                              post=POSTS_tag, typeof="tags", tags=tags, extension=extension,
-                                              navi=navigation_items)
-        os.makedirs(os.path.dirname(output_tag_path), exist_ok=True)
-        with open(output_tag_path, 'w', encoding="utf-8") as file:
-            file.write(tag_page_final)
+        split_dicts = split_dict_into_n(POSTS_SORTED, user_input_n)
+
+        for jj in range(len(split_dicts)):
+            list_final = list_template.render(title=site_title, description=site_description,
+                                              post=split_dicts[jj], page_index=jj, page_range=len(split_dicts),
+                                              typeof="lists",
+                                              extension=extension, navi=navigation_items)
+            paginator = "_output/posts" + str(jj + 1) + extension if jj != 0 else "_output/posts" + extension
+            with open(paginator, 'w', encoding="utf-8") as file:
+                file.write(list_final)
+
+        Tag_list = [POSTS_SORTED[item].metadata["tags"] for item in POSTS_SORTED]
+        Tag_list_temp = " ".join(Tag_list)
+
+        Tag_list_final = isolate_tags(Tag_list_temp)
+
+        for tags in Tag_list_final:
+            output_tag_path = f'_output/post/tags/{tags}{extension}'
+            POSTS_tag = {}
+            for item in POSTS_SORTED:
+                tags_in_post_correct = POSTS_SORTED[item].tags
+
+                if tags in tags_in_post_correct:
+                    POSTS_tag[item] = POSTS[item]
+
+            tag_page_final = tags_template.render(title=site_title, description=site_description,
+                                                  post=POSTS_tag, typeof="tags", tags=tags, extension=extension,
+                                                  navi=navigation_items)
+            os.makedirs(os.path.dirname(output_tag_path), exist_ok=True)
+            with open(output_tag_path, 'w', encoding="utf-8") as file:
+                file.write(tag_page_final)
 
     json_combined_dict = {}
 
+
     json_dict_post = {key: {'title': value.title, 'text': value.text, 'slug': f"post/{value.slug}"} for key, value in
-                      POSTS.items()}
+                      POSTS.items()} if post_template else {}
+
     json_dict_page = {key: {'title': value.title, 'text': value.text, 'slug': value.slug} for key, value in
-                      PAGES.items() if key != "404.md"}
+                      PAGES.items() if key != "404.md"} if page_template else {}
 
     json_combined_dict = {**json_dict_post, **json_dict_page}
 
-    result_dict = [{'uri': f"{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
-                   value
-                   in
-                   json_combined_dict.values()]
 
-    result_dict_post = [
-        {'uri': f"../{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
-        value in
-        json_combined_dict.values()]
+    if json_combined_dict:
+        result_dict = [{'uri': f"{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
+                       value
+                       in
+                       json_combined_dict.values()]
 
-    result_dict_tags = [
-        {'uri': f"../../{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
-        value in
-        json_combined_dict.values()]
+        result_dict_post = [
+            {'uri': f"../{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
+            value in
+            json_combined_dict.values()]
 
-    json_data = json.dumps(result_dict, indent=2)
-    json_data_post = json.dumps(result_dict_post, indent=2)
+        result_dict_tags = [
+            {'uri': f"../../{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
+            value in
+            json_combined_dict.values()]
 
-    json_data_processing(result_dict, f'_output/index.json')
-    json_data_processing(result_dict_post, f'_output/post/index.json')
-    json_data_processing(result_dict_tags, f'_output/post/tags/index.json')
+        json_data_processing(result_dict, f'_output/index.json')
+
+        if post_template:
+            json_data_processing(result_dict_post, f'_output/post/index.json')
+            json_data_processing(result_dict_tags, f'_output/post/tags/index.json')
 
     bestaticSitemap.generate_sitemap(siteURL, "_output")
 

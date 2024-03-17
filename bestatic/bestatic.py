@@ -2,6 +2,7 @@ def main():
     import argparse
     import os
     import tomli
+    import shutil
     from .generator import generator
     from .httpserver import bestatic_serv
     from .quickstart import quickstart
@@ -47,6 +48,7 @@ def main():
         generator(**config)
 
     if args.directory:
+        shutil.rmtree(args.directory)
         os.rename("_output", args.directory)
 
     if args.serve:
