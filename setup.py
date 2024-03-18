@@ -20,7 +20,9 @@ setup(
         'soupsieve == 2.5',
         'text-unidecode == 1.3',
         'tomli == 2.0.1',
-        'tomli_w == 1.0.0'
+        'tomli_w == 1.0.0',
+        'pytz == 2024.1',
+        'feedgen == 1.0.0'
     ],
     python_requires=">=3.8",
     entry_points={

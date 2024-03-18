@@ -38,7 +38,7 @@
           <p class="myptag">Posted on {{ post[name].metadata["date"] }}</p>
 
          <small> Tags: {% for tag in post[name].tags %}
-            <a href="{{root_path}}/post/{{ tag }}{{extension}}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+            <a href="{{root_path}}/post/tags/{{ tag }}{{extension}}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
             {% endfor %} </small>
 
         <p>{{ post[name].summary }}</p></ul>

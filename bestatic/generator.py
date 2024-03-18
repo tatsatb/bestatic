@@ -10,6 +10,8 @@ def generator(**config):
     import copy
     import re
     from bs4 import BeautifulSoup
+    from feedgen.feed import FeedGenerator
+    import pytz
     import json
     from bestatic import bestaticSitemap
 
@@ -86,6 +88,8 @@ def generator(**config):
     site_title = config["title"] if config and "title" in config else "A Demo Site for Bestatic"
     site_description = config["description"] if config and "description" in config else "A Demo Site for Bestatic"
     theme_name = config["theme"] if config and "theme" in config else "Amazing"
+    rss_feed = config["rss_feed"] \
+        if config and "rss_feed" in config else True
     current_directory = os.getcwd()
 
     shutil.rmtree(os.path.join(current_directory, "_output")) if os.path.exists(
@@ -134,7 +138,6 @@ def generator(**config):
     list_template = None
     tags_template = None
 
-
     if os.path.exists(os.path.join(working_directory, "templates", "home.html.jinja2")):
         home_template = env.get_template('home.html.jinja2')
         home_final = home_template.render(title=site_title, description=site_description,
@@ -146,7 +149,8 @@ def generator(**config):
         try:
             page_template = env.get_template('page.html.jinja2')
         except FileNotFoundError:
-            raise Exception("The 'page.html.jinja2' template must exist in the theme directory to process static pages.")
+            raise Exception(
+                "The 'page.html.jinja2' template must exist in the theme directory to process static pages.")
     if os.path.exists(os.path.join(working_directory, "templates", "404.html.jinja2")):
         error_template = env.get_template('404.html.jinja2')
 
@@ -176,7 +180,8 @@ def generator(**config):
         except FileNotFoundError:
             raise Exception("The 'post', 'list', and 'taglist' template must exist in the templates directory of "
                             "theme root directory to process the blog/posts/news items.")
-
+    else:
+        pass
 
     if post_template:
 
@@ -248,7 +253,6 @@ def generator(**config):
 
     json_combined_dict = {}
 
-
     json_dict_post = {key: {'title': value.title, 'text': value.text, 'slug': f"post/{value.slug}"} for key, value in
                       POSTS.items()} if post_template else {}
 
@@ -257,9 +261,9 @@ def generator(**config):
 
     json_combined_dict = {**json_dict_post, **json_dict_page}
 
-
     if json_combined_dict:
-        result_dict = [{'uri': f"{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']} for
+        result_dict = [{'uri': f"{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text']}
+                       for
                        value
                        in
                        json_combined_dict.values()]
@@ -281,6 +285,42 @@ def generator(**config):
             json_data_processing(result_dict_tags, f'_output/post/tags/index.json')
 
     bestaticSitemap.generate_sitemap(siteURL, "_output")
+
+    timezone = pytz.timezone('UTC')
+
+    if post_template and rss_feed is True:
+        rss_dict_post = {
+            key: {'title': value.title, 'text': value.text, 'slug': f"post/{value.slug}",
+                  'date': datetime.strptime(value.metadata["date"], "%B %d, %Y")} for
+            key, value in
+            reversed(POSTS_SORTED.items())} if post_template else {}
+
+        posts_dict = [
+            {'uri': f"{siteURL}/{value['slug']}{json_extension}", 'title': value['title'], 'content': value['text'],
+             'date': timezone.localize(value['date'])} for
+            value
+            in
+            rss_dict_post.values()]
+
+        fg = FeedGenerator()
+        fg.title(site_title)
+        fg.link(href=siteURL + "/posts", rel='alternate')
+        fg.description(site_description)
+
+        # Add entries from the dictionary
+        for entry_data in posts_dict:
+            entry = fg.add_entry()
+            entry.title(entry_data['title'])
+            entry.description(entry_data['content'])
+            entry.link(href=entry_data['uri'])
+            entry.pubDate(entry_data['date'])
+
+        # Generate the RSS feed
+        rss_feed = fg.rss_str(pretty=True)
+
+        # Save the feed to a file (optional)
+        with open('_output/index.rss', 'wb') as rss_file:
+            rss_file.write(rss_feed)
 
     return None
 

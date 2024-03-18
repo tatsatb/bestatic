@@ -9,10 +9,13 @@ window.scrollTo({ top: 0, behavior: "smooth" });
 
 
 
-const currentLink = window.location.pathname; // Get current URL path
 
-const links = document.querySelectorAll('.side-link'); // Select all links
 
+
+const currentLink = window.location.href; // Get current URL path
+console.log(currentLink)
+const links = document.querySelectorAll('.main-link'); // Select all links
+console.log(links)
 links.forEach(link => {
   if (link.href.endsWith(currentLink)) {
     link.classList.add('active'); // Add 'active' class to matching link

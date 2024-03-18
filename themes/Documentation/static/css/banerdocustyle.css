@@ -3,6 +3,16 @@
 @import url(https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700);
 @import url(https://fonts.googleapis.com/css2?family=Zen+Antique+Soft:wght@400);
 
+.stickyfooter{
+	position: sticky !important;
+	/*top: 0;*/
+	/*left: 0;*/
+	bottom: 0 !important;
+	margin-top: 0;
+	margin-bottom: 0 !important;
+	/*z-index: 4 !important;*/
+	}
+
 .stickymain{
 	position: sticky !important;
 	top: 0;
@@ -89,9 +99,9 @@ header{
 	font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
-a.side-link.active{
-	background-color: rgba(9, 75, 167, 0.5) !important;
-	/* color: #7a7288 !important; */
+a.main-link.active{
+	background-color: rgba(76, 122, 229, 0.15) !important;
+	color: #0c0713 !important;
 }
 
 .search-results{

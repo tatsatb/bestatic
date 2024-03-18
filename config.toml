@@ -1,9 +1,12 @@
-siteURL = "http://example.org" # Do not use a training slash
+siteURL = "http://example.org" # Do not use a trailing slash
 title = "Bestatic | The Best Static Site Generator!"
 description = "A demo site for Bestatic"
 theme = "Documentation"
-number_of_pages = 4 # Enter Number of blog pages to pagniate blog posts
+number_of_pages = 4 # Enter the number of blog pages to paginate blog posts
 ugly_url = false
+rss_feed = true
 [disqus]
     enabled = true
     disqusShortname = "demo-static"
+
+

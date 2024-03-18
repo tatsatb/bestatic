@@ -48,7 +48,7 @@ def main():
         generator(**config)
 
     if args.directory:
-        shutil.rmtree(args.directory)
+        shutil.rmtree(args.directory) if os.path.exists(args.directory) else None
         os.rename("_output", args.directory)
 
     if args.serve:
