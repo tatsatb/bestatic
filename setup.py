@@ -31,6 +31,7 @@ setup(
             'bestatic = bestatic.bestatic:main'
         ]
     },
+    description="A simple but powerful static-site generator",
     long_description=description,
     long_description_content_type="text/markdown",
 )

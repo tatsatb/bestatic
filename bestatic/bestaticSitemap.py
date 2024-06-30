@@ -4,35 +4,38 @@ import xml.etree.ElementTree as ET
 
 
 def get_last_modified_time(file_path):
+    file_path = os.path.join("_output", file_path, "index.html")
     return datetime.datetime.fromtimestamp(os.path.getmtime(file_path)).isoformat()
+
+
+def find_single_index_folders(root_folder):
+    matching_folders = []
+    for root, dirs, files in os.walk(root_folder):
+        num_index_html = 0
+        for filename in files:
+            if filename.lower() == "index.html":
+                num_index_html = num_index_html + 1
+        if num_index_html == 1:
+            root = root[len("_output")+1:]
+            if root != "404":
+                matching_folders.append(root)
+    return matching_folders
 
 
 def generate_sitemap(base_url, folder_path):
     root = ET.Element("urlset")
     root.set("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9")
 
-    for currpath, dirpath, filenames in os.walk(folder_path):
-        for filename in filenames:
-            file_path = os.path.join(currpath, filename)
-            if currpath == folder_path:
-                file_name = filename if filename != "index.html" else ""
-            elif currpath == os.path.join(folder_path, "post"):
-                file_name = "post" + "/" + filename
-            elif currpath == os.path.join(folder_path, "post", "tags"):
-                file_name = "post" + "/" + "tags" + "/" + filename
-            else:
-                continue
+    all_links = find_single_index_folders(folder_path)
 
-            if "index.json" in file_name or "404" in file_name or ".xml" in file_name:
-                continue
-            else:
-                url = ET.SubElement(root, "url")
-                loc = ET.SubElement(url, "loc")
-                loc.text = f"{base_url}/{file_name}"
-                lastmod = ET.SubElement(url, "lastmod")
-                lastmod.text = get_last_modified_time(file_path)
-
-            # ET.SubElement(url, "newline")
+    for items in all_links:
+        url = ET.SubElement(root, "url")
+        loc = ET.SubElement(url, "loc")
+        loc.text = f"{base_url}/{items}"
+        loc.text = f"{loc.text.replace(chr(92), '/')}"
+        lastmod = ET.SubElement(url, "lastmod")
+        lastmod.text = get_last_modified_time(items)
+        ET.SubElement(url, "newline")
 
     tree = ET.ElementTree(root)
     tree.write("_output/sitemap.xml", encoding="utf-8", xml_declaration=True)

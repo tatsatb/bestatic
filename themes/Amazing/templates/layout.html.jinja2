@@ -1,15 +1,15 @@
 {% if typeof == "home" or typeof == "pages" or typeof == "lists" %}
-{% set css_path = "./static/css" %}
-{% set Image_path = "./static/Images" %}
-{% set root_path = "." %}
+{% set css_path = "/static/css" %}
+{% set Image_path = "/static/Images" %}
+{% set root_path = "" %}
 {% elif typeof == "tags" %}
-{% set css_path = "../../static/css" %}
-{% set Image_path = "../../static/Images" %}
-{% set root_path = "../.." %}
+{% set css_path = "/static/css" %}
+{% set Image_path = "/static/Images" %}
+{% set root_path = "" %}
 {% else %}
-{% set css_path = "../static/css" %}
-{% set Image_path = "../static/Images" %}
-{% set root_path = ".." %}
+{% set css_path = "/static/css" %}
+{% set Image_path = "/static/Images" %}
+{% set root_path = "" %}
 {% endif %}
 {% if post is defined %}
     {% set katex = post.katex %}

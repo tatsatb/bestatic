@@ -1,7 +1,6 @@
 def quickstart(*theme):
     import os
-    import tomli
-    import tomli_w
+    import yaml
     import frontmatter
     import datetime
 
@@ -12,15 +11,15 @@ def quickstart(*theme):
     is_exist = os.path.exists(path)
 
     if not is_exist:
-        raise FileNotFoundError(f"Theme directory does not exist! Please make sure a proper theme is present in themes directory")
+        raise FileNotFoundError(f"Theme directory does not exist! Please make sure a proper theme is present in "
+                                f"themes directory")
 
     config_dict = {
         "siteURL": "http://example.org",
         "title": input("Enter the title of the website: "),
         "description": input("Enter the description of the website: "),
         "theme": theme,
-        "number_of_pages": 1,
-        "ugly_url": False
+        "number_of_pages": 1
     }
 
     while not config_dict["title"]:
@@ -31,14 +30,13 @@ def quickstart(*theme):
         print("Description of the website cannot be empty! Please try again. ")
         config_dict["description"] = input("Enter the description of the website: ")
 
-    output_file = "config.toml"
+    output_file = "config.yaml"
 
-    # Write the dictionary to the TOML file
-    with open(output_file, "wb") as f:
-        tomli_w.dump(config_dict, f)
+    with open(output_file, "w") as f:
+        yaml.dump(config_dict, f, sort_keys=False)
 
-    with open("config.toml", mode="rb") as ft:
-        config = tomli.load(ft)
+    with open("config.yaml", mode="rb") as ft:
+        config = yaml.safe_load(ft)
 
     post_dict = {
         "post1": {'title': 'My First Post',
@@ -61,7 +59,7 @@ def quickstart(*theme):
         },
         "page2": {
             'title': 'Contact',
-            'description': "About the contact",
+            'description': "How to contact the creators of this website",
             'slug': 'contact'
         }
     }
@@ -86,11 +84,11 @@ def quickstart(*theme):
     # Save the updated contents to files
     for item in post:
         with open(f'posts/{post[item].metadata["slug"]}.md', 'w', encoding='utf-8') as f:
-            f.write(frontmatter.dumps(post[item]))
+            f.write(frontmatter.dumps(post[item], sort_keys=False))
 
     for item in page:
         with open(f'pages/{page[item].metadata["slug"]}.md', 'w', encoding='utf-8') as f:
-            f.write(frontmatter.dumps(page[item]))
+            f.write(frontmatter.dumps(page[item], sort_keys=False))
 
     return config
 

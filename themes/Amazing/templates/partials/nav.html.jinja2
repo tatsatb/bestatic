@@ -6,16 +6,30 @@
         <div class="navbar-collapse collapse w-100 p-0" id="collapsingNavbar">
             <ul class="navbar-nav w-100 p-0 justify-content-center" style="display: flex; align-items: center;">
                 <li class="nav-item ps-3">
-                    <a class="nav-link" href="{{ root_path }}">Home</a>
+                    <a class="nav-link" href="/">Home</a>
                 </li>
 
-                    {% for item in navi.values() %}
                 <li class="nav-item ps-3">
-                    <a class="nav-link" href="{{ root_path }}/{{ item["slug"] }}">{{ item["title"] }}</a>
+                    <a class="nav-link" href="/subpages/research">Research</a>
                 </li>
-                    {% endfor %}
+
                 <li class="nav-item ps-3">
-                    <a class="nav-link" href="{{ root_path }}/posts">Blog</a>
+                    <a class="nav-link" href="/subpages/publication">Publications</a>
+                </li>
+
+                <li class="nav-item ps-3">
+                    <a class="nav-link" href="/contact">Contact</a>
+                </li>
+
+
+
+{#                    {% for item in navi.values() %}#}
+{#                <li class="nav-item ps-3">#}
+{#                    <a class="nav-link" href="/{{ item["slug"] }}">{{ item["title"] }}</a>#}
+{#                </li>#}
+{#                    {% endfor %}#}
+                <li class="nav-item ps-3">
+                    <a class="nav-link" href="/posts">Blog</a>
                 </li>
                 <li class="nav-item ps-3">
                           <form class="d-flex">

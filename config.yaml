@@ -1,0 +1,11 @@
+siteURL: "http://example.org"  # Do not use a trailing slash
+title: "Bestatic | The Best Static Site Generator!"
+description: "A demo site for Bestatic"
+theme: Amazing
+number_of_pages: 4  # Enter the number of blog pages to paginate blog posts
+comments:
+  enabled: true
+  system: giscus
+  comment_system_id: "tatsatb/giscus-test"
+rss_feed: true
+

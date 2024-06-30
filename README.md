@@ -25,14 +25,14 @@ complies the website, it automatically generates a new search index.
 
 -  Syntax-highlighting for codes is available out-of-the-box.
 
--  Disqus comments are supported.
+-  Disqus and Giscus comments are fully supported.
 
 -  A simple web server has been included which enables viewing all the changes in the site instantly. 
 
 -  Guided quick-start from the command-line. 
 
 
--  Configurable via a `config.toml` file.
+-  Configurable via a `config.yaml` file.
 
 ## Installation
 

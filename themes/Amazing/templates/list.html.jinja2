@@ -14,19 +14,19 @@
 
 {% if page_range !=1 %}
           {% if page_index == 0 %}
-<p class="nextpage"><a href="{{ root_path }}/posts{{ page_index+2 }}{{extension}}">Next Page</a></p>
+<p class="nextpage"><a href="/posts{{ page_index+2 }}">Next Page</a></p>
 {% elif page_index == 1 and page_range !=1 %}
-<div class="prevpage"><a href="{{ root_path }}/posts{{extension}}">Previous Page</a>
-<span class="nextpage"><a href="{{ root_path }}/posts{{ page_index+2 }}{{extension}}">Next Page</a></span>
+<div class="prevpage"><a href="/posts">Previous Page</a>
+<span class="nextpage"><a href="/posts{{ page_index+2 }}">Next Page</a></span>
 
 
 </div>
 {% elif page_index == page_range-1 %}
-<p class="prevpage"><a href="{{ root_path }}/posts{{ page_index }}{{extension}}">Previous Page</a></p>
+<p class="prevpage"><a href="/posts{{ page_index }}">Previous Page</a></p>
 {% else %}
 
-<div class="prevpage"><a href="{{ root_path }}/posts{{ page_index }}{{extension}}">Previous Page</a>
-              <span class="nextpage"><a href="{{ root_path }}/posts{{ page_index+2 }}{{extension}}">Next Page</a></span>
+<div class="prevpage"><a href="/posts{{ page_index }}">Previous Page</a>
+              <span class="nextpage"><a href="/posts{{ page_index+2 }}">Next Page</a></span>
 </div>
 {% endif %}
 {% endif %}
@@ -37,13 +37,19 @@
         <h3 class="tbh3">{{ post[name].metadata["title"] }}</h3>
           <p class="myptag">Posted on {{ post[name].metadata["date"] }}</p>
 
+          {%  if post[name].tags %}
          <small> Tags: {% for tag in post[name].tags %}
-            <a href="{{root_path}}/post/tags/{{ tag }}{{extension}}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+            <a href="{{root_path}}/post/tags/{{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
             {% endfor %} </small>
+          {% endif %}
 
         <p>{{ post[name].summary }}</p></ul>
-        <p class="myreadmore"><a href="{{ root_path }}/post/{{ post[name].slug }}{{extension}}">Read More</a></p>
-        <br><br>
+            {% if post[name].path_info %}
+        <p class="myreadmore"><a href="/post/{{ post[name].path_info }}/{{ post[name].slug }}">Read More</a></p>
+            {% else %}
+        <p class="myreadmore"><a href="/post/{{ post[name].slug }}">Read More</a></p>
+              {% endif  %}
+                <br><br>
             </div>
         {% endfor %}
 

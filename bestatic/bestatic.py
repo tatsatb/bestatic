@@ -3,7 +3,7 @@ def main():
     import os
     import datetime
     import frontmatter
-    import tomli
+    import yaml
     import shutil
     from .generator import generator
     from .httpserver import bestatic_serv
@@ -52,8 +52,8 @@ def main():
             os.chdir(os.getcwd())
             newpage(args.filename)
     else:
-        with open("config.toml", mode="rb") as ft:
-            config = tomli.load(ft)
+        with open("config.yaml", mode="rb") as ft:
+            config = yaml.safe_load(ft)
         if args.theme:
             config["theme"] = args.theme
 

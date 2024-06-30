@@ -17,7 +17,7 @@
         <h3 class="tbh3">{{ post[name].metadata["title"] }}</h3>
           <p class="myptag">Posted on {{ post[name].metadata["date"] }}</p>
         <p>{{ post[name].summary }}</p></ul>
-        <p class="myreadmore"><a href="{{ root_path }}/post/{{ post[name].slug }}{{extension}}">Read More</a></p>
+        <p class="myreadmore"><a href="/post/{{ post[name].path_info }}/{{ post[name].slug }}">Read More</a></p>
         <br><br>
         {% endfor %}
 
