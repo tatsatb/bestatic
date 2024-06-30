@@ -1,5 +1,7 @@
 # Bestatic
 
+### [Install from PyPI](https://pypi.org/project/Bestatic/)
+
 Bestatic is a static-site generator, written in Python and Jinja2 templating engine. 
 It is truly minimal, yet fully-featured. Like every other static-site generator,
 it can generate a complete website by processing a bunch of markdown files. As a result, 
