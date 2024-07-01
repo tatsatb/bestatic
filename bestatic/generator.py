@@ -5,6 +5,7 @@ def generator(**config):
     from markdown import markdown
     from markdown.extensions import codehilite
     from markdown.extensions.toc import slugify
+    from pymdownx import emoji
     import frontmatter
     import shutil
     import copy
@@ -72,7 +73,21 @@ def generator(**config):
             with open(self.path_of_md, 'r', encoding='utf-8') as f:
                 self.content = markdown(f.read(), extensions=[
                     "meta", "attr_list", "tables", codehilite.CodeHiliteExtension(linenos="inline"), "fenced_code",
-                    "customblocks"])
+                    "customblocks", 'pymdownx.emoji'], extension_configs={
+                    "pymdownx.emoji": {
+                        "emoji_index": emoji.twemoji,
+                        "emoji_generator": emoji.to_svg,
+                        "alt": "short",
+                        "options": {
+                            "attributes": {
+                                "align": "absmiddle",
+                                "height": "50px",
+                                "width": "50px"
+                            },
+                        },
+                    },
+                })
+
                 f.seek(0)
                 self.metadata = frontmatter.load(f).metadata
                 plain_text = ''.join(BeautifulSoup(self.content, 'html.parser').findAll(string=True))

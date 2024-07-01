@@ -23,7 +23,8 @@ setup(
         'tomli_w == 1.0.0',
         'pytz == 2024.1',
         'feedgen == 1.0.0',
-        'markdown-customblocks == 1.4.1'
+        'markdown-customblocks == 1.4.1',
+        'pymdown-extensions == 10.7.1'
     ],
     python_requires=">=3.8",
     entry_points={
