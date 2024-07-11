@@ -146,7 +146,7 @@ def generator(**config):
                 input_page_path = os.path.join(root, filename)
                 PAGES[filename] = Parsing(input_page_path)
 
-    env = Environment(loader=PackageLoader("generator", os.path.join(working_directory, "templates")))
+    env = Environment(loader=PackageLoader("bestatic.generator", os.path.join(working_directory, "templates")))
 
     env.trim_blocks = True
     env.lstrip_blocks = True

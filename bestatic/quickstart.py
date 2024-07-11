@@ -16,19 +16,19 @@ def quickstart(*theme):
 
     config_dict = {
         "siteURL": "http://example.org",
-        "title": input("Enter the title of the website: "),
-        "description": input("Enter the description of the website: "),
         "theme": theme,
         "number_of_pages": 1
     }
 
-    while not config_dict["title"]:
-        print("Title of the website cannot be empty! Please try again. ")
-        config_dict["title"] = input("Enter the title of the website: ")
+    fields = ["title", "description"]
 
-    while not config_dict["description"]:
-        print("Description of the website cannot be empty! Please try again. ")
-        config_dict["description"] = input("Enter the description of the website: ")
+    for field in fields:
+        while not config_dict[field]:
+            value = input(f"Enter the {field} of the website: ")
+            config_dict[field] = value
+
+            if not config_dict[field]:
+                print(f"{field.capitalize()} cannot be empty! Please try again. ")
 
     output_file = "config.yaml"
 

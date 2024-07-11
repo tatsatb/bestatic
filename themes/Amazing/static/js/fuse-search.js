@@ -95,7 +95,7 @@
   }
 }
   const isMobi = /Mobi/i.test(navigator.userAgent);
-  input.addEventListener(isMobi ? 'change' : 'input', isMobi ? search : debounce(search, delay));
+  input.addEventListener(isMobi ? 'input' : 'input', isMobi ? debounce(search, delay) : search);
 
   document.addEventListener('click', function(event) {
         if (!output.contains(event.target)) {
