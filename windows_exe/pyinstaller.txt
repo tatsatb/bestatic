@@ -1,0 +1,3 @@
+pip install Bestatic
+pip install pyinstaller
+pyinstaller --collect-all bestatic --onedir --console --name bestatic bestatic.py
