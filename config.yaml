@@ -1,6 +1,6 @@
 siteURL: "http://example.org"  # Replace with the URL of your site; Please do not add a trailing slash
 title: "Bestatic | The Best Static Site Generator!"
-description: "A demo site for Bestatic"
+description: "A simple but powerful static-site generator that transforms markdown texts to webpages and blogs"
 theme: Amazing
 number_of_pages: 4  # Enter the number of blog pages to paginate blog posts
 comments:
@@ -8,4 +8,4 @@ comments:
   system: giscus # Enter "disqus" or "giscus" here.
   comment_system_id: "tatsatb/giscus-test"
 rss_feed: true
-
+homepage_type: default # Enter "default" or "list"
