@@ -11,7 +11,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'beautifulsoup4 == 4.12.3',
-        'Jinja2 == 3.1.3',
+        'Jinja2 == 3.1.4',
         'Markdown == 3.5.2',
         'MarkupSafe == 2.1.5',
         'Pygments == 2.17.2',

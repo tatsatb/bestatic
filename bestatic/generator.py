@@ -114,6 +114,7 @@ def generator(**config):
     theme_name = config["theme"] if config and "theme" in config else "Amazing"
     rss_feed = config["rss_feed"] \
         if config and "rss_feed" in config else True
+    homepage_type = config ["homepage_type"] if config and "homepage_type" in config else "default"
     current_directory = os.getcwd()
 
     shutil.rmtree(os.path.join(current_directory, "_output")) if os.path.exists(
@@ -184,13 +185,23 @@ def generator(**config):
                 page_final = error_template.render(title=site_title, description=site_description,
                                                    typeof="pages")
             else:
-                page_final = page_template.render(title=site_title, description=site_description,
-                                                  page=PAGES[page], typeof="pages")
+                if "template" in PAGES[page].metadata:
+                    page_template = env.get_template(PAGES[page].metadata['template'])
+                    page_final = page_template.render(title=site_title, description=site_description,
+                                                      page=PAGES[page], typeof="pages")
+                else:
+                    page_template = env.get_template('page.html.jinja2')
+                    page_final = page_template.render(title=site_title, description=site_description,
+                                                      page=PAGES[page], typeof="pages")
 
-            if not os.path.exists(output_page_path):
-                os.makedirs(output_page_path, exist_ok=True)
-            with open(f"{output_page_path}/index.html", 'w', encoding="utf-8") as file:
-                file.write(page_final)
+            if PAGES[page].metadata['slug'] and PAGES[page].metadata['slug'] == "index.html":
+                with open(f"_output/index.html", "w", encoding="utf-8") as file:
+                    file.write(page_final)
+            else:
+                if not os.path.exists(output_page_path):
+                    os.makedirs(output_page_path, exist_ok=True)
+                with open(f"{output_page_path}/index.html", 'w', encoding="utf-8") as file:
+                    file.write(page_final)
 
     if os.path.isdir('posts') and len(os.listdir('posts')):
         try:
@@ -266,6 +277,9 @@ def generator(**config):
                 os.makedirs(paginator, exist_ok=True)
             with open(f"{paginator}/index.html", 'w', encoding="utf-8") as file:
                 file.write(list_final)
+
+        if homepage_type == "list":
+            shutil.move("_output/posts/index.html", "_output/index.html")
 
         Tag_list = [POSTS_SORTED[item].metadata["tags"] for item in POSTS_SORTED if "tags" in POSTS_SORTED[item].metadata]
         Tag_list_temp = " ".join(Tag_list)
