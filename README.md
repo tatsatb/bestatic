@@ -59,8 +59,9 @@ If you are on Linux (Ubuntu/Debian) please use this:
     source ~/.virtualenvs/bestatic/bin/activate
     pip install Bestatic
 
+
 Similar commands can be used to create virtual environment in Windows or mac OS. Bestatic can also be installed
 inside a conda environment. 
 
-
+Make sure to have a `config.yaml` file and `themes` folder in the working directory (as an example you can use the ones available in this repo). You can also run `bestatic quickstart` to create a config.yaml file from scratch and to build a site.   
 
