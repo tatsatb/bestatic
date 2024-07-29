@@ -7,7 +7,6 @@ import frontmatter
 import yaml
 import shutil
 import multiprocessing
-import signal
 import watchdog.events
 import watchdog.observers
 from bestatic.generator import generator
@@ -15,7 +14,6 @@ from bestatic.httpserver import bestatic_serv
 from bestatic.quickstart import quickstart
 from bestatic.newcontent import newpost, newpage
 import bestatic
-import pdb
 
 def run_server(directory):
     bestatic_serv(directory) if directory else bestatic_serv()
@@ -92,22 +90,38 @@ def run_watcher(config, *directoryname):
     return None
 
 def main():
-    parser = argparse.ArgumentParser(description="Program to accept command-line arguments in Bestatic")
+    parser = argparse.ArgumentParser(description="Program to accept command-line inputs in Bestatic...")
     parser.add_argument("action", nargs="?", choices=["generator", "quickstart", "version", "newpage", "newpost"],
                         default="generator",
-                        help="Specify whether you are checking a version (argument: version),"
-                             " initializing the site (argument: quickstart), or doing a build (argument: generator)."
-                             " If only package name is entered, by default, we will assume that you are just trying to"
-                             " build your website into '_output' directory")
+                        help="""
+                        How it works:
+                        1) 'bestatic version': Prints the currently installed version of bestatic. \t
+                        2) 'bestatic quickstart': Creates a 'config.yaml' file by accepting user input, 
+                        creates two pages and two posts, and finally build the website in '_output' directory. \t
+                        3) 'bestatic newpage filepath' or 'betatic newpost filepath':  Creates a new page (inside './pages' directory)
+                        or new post (inside './posts' directory), respectively, at the specified filepath. See 'filepath' argument for more details.
+                        4) 'bestatic' or 'bestatic generator':  If 'config.yaml' file or 'themes' directory is not 
+                        present in current working directory, bestatic prints that message.
+                        If everything is in order in current working directory, bestatic build your website into '_output' directory.
+                        """)
 
-    parser.add_argument("filename", nargs="?", help="For newpost or newpage argument, specify the filename(.md will "
-                                                    "be added automatically)")
-    parser.add_argument("--directory", "-d", help="Specify a custom directory. If not specified,"
-                                                  " it will generate the website in '_output' directory by default")
-    parser.add_argument("--theme", "-t", help="Specify the theme. If not specified, it will use the 'Amazing' theme.")
-    parser.add_argument("--serve", "-s", action="store_true", help="Start server after the build...")
+    parser.add_argument("filepath", nargs="?", help="For newpost or newpage argument, specify the filepath. "
+                                                    "The.md extension will "
+                                                    "be added automatically. If subdirectories do not exist, bestatic will"
+                                                    " create them. For e.g., 'bestatic newpost sub/directory/test1 will"
+                                                    " create test1.md inside ./sub/directory/ directory.")
+    parser.add_argument("--directory", "-d", help="Specify a custom directory where you want to get the final "
+                                                  "compiled version of the website (and serve from there). If not specified,"
+                                                  " bestatic will generate the website in '_output' directory by default.")
+    parser.add_argument("--theme", "-t", help="Specify the theme. If nothing is specified, bestatic will "
+                                              "use the 'Amazing' theme, provided is there in the 'themes' directory.")
+    parser.add_argument("--serve", "-s", action="store_true", help="Start server after the build. You can visit"
+                                                                   " https://localhost:8080 to visit the live version of your"
+                                                                   " webpage locally.")
     parser.add_argument("--autoreload", "-a", action="store_true",
-                        help="Start watching for file changes and automatically rebuild the website.")
+                        help="When '-a' or '--autoreload' is specified, bestatic will watch the current directory "
+                             "recursively for for any changes in files and then will automatically rebuild the website. "
+                             "Use 'bestatic -sa and reload https://localhost:8080 to see your changes in action live!")
 
     args = parser.parse_args()
 
@@ -124,22 +138,22 @@ def main():
     elif args.action == "version":
         print(f'Bestatic version: {bestatic.__version__}')
     elif args.action == "newpost":
-        if not args.filename:
-            raise ValueError("Please specify filename to use 'newpost' function.")
+        if not args.filepath:
+            raise ValueError("Please specify filepath to use 'newpost' function.")
         else:
             os.chdir(os.getcwd())
-            newpost(args.filename)
+            newpost(args.filepath)
     elif args.action == "newpage":
-        if not args.filename:
-            raise ValueError("Please specify filename to use 'newpage' function.")
+        if not args.filepath:
+            raise ValueError("Please specify filepath to use 'newpage' function.")
         else:
             os.chdir(os.getcwd())
-            newpage(args.filename)
+            newpage(args.filepath)
     else:
         current_directory = os.getcwd()
         if not os.path.isfile(os.path.join(current_directory,"config.yaml")) or not os.path.exists(os.path.join(current_directory,"themes")):
             print("\nThank you for trying out Bestatic!\n"
-                  "Please note that you need to have have a 'config.yaml' file and 'themes' folder in the working directory "
+                  "Please note that you need to have have a 'config.yaml' file and 'themes' directory within the working directory "
                   "to correctly build the site.\nYou can generate a config.yaml file by running 'bestatic quickstart'. \n"
                   "You can download a theme from the github repo.\n"
                   "After having those in current directory, please run the program again.\n\n"
@@ -179,6 +193,7 @@ def main():
 
     elif args.serve and not args.autoreload:
         run_server(args.directory) if args.directory else run_server()
+    return None
 
 if __name__ == '__main__':
     main()

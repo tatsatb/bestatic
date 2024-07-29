@@ -3,7 +3,7 @@ import datetime
 import frontmatter
 
 
-def newpost(filename):
+def newpost(filepath):
     post_dict = {'title': "This is a sample post",
                  'date': datetime.datetime.now().strftime("%B %d, %Y"),
                  'tags': "tag1, tag2",
@@ -17,11 +17,16 @@ def newpost(filename):
     post = frontmatter.Post(markdown_content_post, **post_dict)
     os.makedirs("posts", exist_ok=True)
 
-    with open(f'posts/{filename}.md', 'w', encoding='utf-8') as f:
+    # Split the pathname to get filename and directory path
+    filename = os.path.basename(filepath)
+    directory_path = os.path.dirname(filepath)
+    os.makedirs(os.path.join("posts", directory_path), exist_ok=True)
+
+    with open(f'posts/{filepath}.md', 'w', encoding='utf-8') as f:
         f.write(frontmatter.dumps(post))
 
 
-def newpage(filename):
+def newpage(filepath):
     page_dict = {'title': "This is a sample page",
                  'description': "This is sample description or summary of a page",
                  'slug': "enter something here to generate URL or delete this 'slug' field to autogenerate"
@@ -33,5 +38,10 @@ def newpage(filename):
     page = frontmatter.Post(markdown_content_post, **page_dict)
     os.makedirs("pages", exist_ok=True)
 
-    with open(f'pages/{filename}.md', 'w', encoding='utf-8') as f:
+    # Split the pathname to get filename and directory path
+    filename = os.path.basename(filepath)
+    directory_path = os.path.dirname(filepath)
+    os.makedirs(os.path.join("pages", directory_path), exist_ok=True)
+
+    with open(f'pages/{filepath}.md', 'w', encoding='utf-8') as f:
         f.write(frontmatter.dumps(page))
