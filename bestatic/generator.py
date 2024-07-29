@@ -127,6 +127,7 @@ def generator(**config):
     rss_feed = config["rss_feed"] \
         if config and "rss_feed" in config else True
     homepage_type = config ["homepage_type"] if config and "homepage_type" in config else "default"
+    enable_inject_tag = config ["enable_inject_tag"] if config and "enable_inject_tag" in config else True
     current_directory = os.getcwd()
 
     shutil.rmtree(os.path.join(current_directory, "_output")) if os.path.exists(
@@ -389,20 +390,23 @@ def generator(**config):
         with open('_output/index.rss', 'wb') as rss_file:
             rss_file.write(rss_feed)
 
-    with open("_output/index.html", 'r', encoding="utf-8") as fi:
-        content = fi.read()
+    if enable_inject_tag == True:
+        with open("_output/index.html", 'r', encoding="utf-8") as fi:
+            content = fi.read()
 
-    if re.search(r'<meta name="generator" content="Bestatic"/>', content):
-        pass
-    else:
-        head_start_pattern = r'<head>'
-        if head_start_pattern == -1:
+        if re.search(r'<meta name="generator" content="Bestatic"/>', content):
             pass
         else:
-            new_content = re.sub(head_start_pattern, head_start_pattern + '\n\t\t<meta name="generator" content="Bestatic"/>', content)
+            head_start_pattern = r'<head>'
+            if head_start_pattern == -1:
+                pass
+            else:
+                new_content = re.sub(head_start_pattern, head_start_pattern + '\n\t\t<meta name="generator" content="Bestatic"/>', content)
 
-            with open("_output/index.html", 'w', encoding="utf-8") as file:
-                file.write(new_content)
+                with open("_output/index.html", 'w', encoding="utf-8") as file:
+                    file.write(new_content)
+    else:
+        pass
 
     return None
 
