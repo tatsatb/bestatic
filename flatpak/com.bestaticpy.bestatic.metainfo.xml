@@ -34,7 +34,8 @@
   </releases>
 
   <content_rating type="oars-1.1" />
-  
+
+  <icon type="stock">com.bestaticpy.bestatic</icon>
   
   <categories>
     <category>Development</category>
