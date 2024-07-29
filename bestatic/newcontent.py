@@ -8,7 +8,7 @@ def newpost(filepath):
                  'date': datetime.datetime.now().strftime("%B %d, %Y"),
                  'tags': "tag1, tag2",
                  'description': "This is sample description or summary of a post",
-                 'slug': "enter something here to generate URL or delete this 'slug' field to autogenerate"
+                 'slug': "sample slug post"
                  }
 
     markdown_content_post = ("This is an example post content in simple markdown. Please replace this with content of "
@@ -29,7 +29,7 @@ def newpost(filepath):
 def newpage(filepath):
     page_dict = {'title': "This is a sample page",
                  'description': "This is sample description or summary of a page",
-                 'slug': "enter something here to generate URL or delete this 'slug' field to autogenerate"
+                 'slug': "sample slug page"
                  }
 
     markdown_content_post = ("This is an example page content in simple markdown. Please replace this with content of "

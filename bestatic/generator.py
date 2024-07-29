@@ -389,6 +389,21 @@ def generator(**config):
         with open('_output/index.rss', 'wb') as rss_file:
             rss_file.write(rss_feed)
 
+    with open("_output/index.html", 'r', encoding="utf-8") as fi:
+        content = fi.read()
+
+    if re.search(r'<meta name="generator" content="Bestatic"/>', content):
+        pass
+    else:
+        head_start_pattern = r'<head>'
+        if head_start_pattern == -1:
+            pass
+        else:
+            new_content = re.sub(head_start_pattern, head_start_pattern + '\n\t\t<meta name="generator" content="Bestatic"/>', content)
+
+            with open("_output/index.html", 'w', encoding="utf-8") as file:
+                file.write(new_content)
+
     return None
 
 

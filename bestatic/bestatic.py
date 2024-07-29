@@ -193,7 +193,7 @@ def main():
             print("Bestatic will now stop watching files...")
 
     elif args.serve and not args.autoreload:
-        run_server(args.directory) if args.directory else run_server()
+        bestatic_serv(args.directory) if args.directory else bestatic_serv()
     return None
 
 if __name__ == '__main__':
