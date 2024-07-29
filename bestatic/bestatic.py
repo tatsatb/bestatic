@@ -108,20 +108,21 @@ def main():
     parser.add_argument("filepath", nargs="?", help="For newpost or newpage argument, specify the filepath. "
                                                     "The.md extension will "
                                                     "be added automatically. If subdirectories do not exist, bestatic will"
-                                                    " create them. For e.g., 'bestatic newpost sub/directory/test1 will"
-                                                    " create test1.md inside ./sub/directory/ directory.")
+                                                    " create them. For e.g., 'bestatic newpost sub/directory/test1' will"
+                                                    " create 'test1.md' inside './sub/directory/' directory.")
     parser.add_argument("--directory", "-d", help="Specify a custom directory where you want to get the final "
                                                   "compiled version of the website (and serve from there). If not specified,"
                                                   " bestatic will generate the website in '_output' directory by default.")
     parser.add_argument("--theme", "-t", help="Specify the theme. If nothing is specified, bestatic will "
-                                              "use the 'Amazing' theme, provided is there in the 'themes' directory.")
+                                              "use the 'Amazing' theme, provided is there in the 'themes' directory."
+                                              " You can create your own theme or download more from the GitHub repo")
     parser.add_argument("--serve", "-s", action="store_true", help="Start server after the build. You can visit"
                                                                    " https://localhost:8080 to visit the live version of your"
                                                                    " webpage locally.")
     parser.add_argument("--autoreload", "-a", action="store_true",
                         help="When '-a' or '--autoreload' is specified, bestatic will watch the current directory "
                              "recursively for for any changes in files and then will automatically rebuild the website. "
-                             "Use 'bestatic -sa and reload https://localhost:8080 to see your changes in action live!")
+                             "Use 'bestatic -sa' and reload https://localhost:8080 to see your changes in action live!")
 
     args = parser.parse_args()
 
@@ -155,7 +156,7 @@ def main():
             print("\nThank you for trying out Bestatic!\n"
                   "Please note that you need to have have a 'config.yaml' file and 'themes' directory within the working directory "
                   "to correctly build the site.\nYou can generate a config.yaml file by running 'bestatic quickstart'. \n"
-                  "You can download a theme from the github repo.\n"
+                  "You can download a theme from the GitHub repo.\n"
                   "After having those in current directory, please run the program again.\n\n"
                   "This program will exit soon. Please visit https://www.bestaticpy.com for more information.\n")
             time.sleep(2)
