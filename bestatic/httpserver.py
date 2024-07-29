@@ -46,6 +46,7 @@ def bestatic_serv(*directory):
         except KeyboardInterrupt:
             print("Server shutting down ...")
             httpd.shutdown()
+            httpd.server_close()
 
     return None
 

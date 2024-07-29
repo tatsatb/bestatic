@@ -16,6 +16,18 @@ def generator(**config):
     import json
     from bestatic import bestaticSitemap
 
+    def copy_if_exists(source, destination):
+        if os.path.exists(source):
+            try:
+                shutil.copytree(source, destination, dirs_exist_ok=True)
+            except shutil.SameFileError:
+                print("Source and destination represent the same file.")
+            except PermissionError:
+                print("Permission denied.")
+        else:
+            pass
+        return None
+
     def isolate_tags(taglist):
         taglist_2 = re.split(r'\s|(?<!\d)[,.]|,.', taglist)
         taglist_3 = [tag for tag in taglist_2 if tag]
@@ -122,15 +134,15 @@ def generator(**config):
 
     working_directory = os.path.join(current_directory, "themes", theme_name)
 
-    source = os.path.join(working_directory, "static")
-    destination = os.path.join(current_directory, "_output", "static")
+    source_theme = os.path.join(working_directory, "static")
+    destination_theme = os.path.join(current_directory, "_output", "static")
 
-    try:
-        shutil.copytree(source, destination, dirs_exist_ok=True)
-    except shutil.SameFileError:
-        print("Source and destination represents the same file.")
-    except PermissionError:
-        print("Permission denied.")
+    source = os.path.join(current_directory, "static-content")
+    destination = os.path.join(current_directory, "_output", "static-content")
+
+    copy_if_exists(source_theme, destination_theme)
+    copy_if_exists(source, destination)
+
 
     POSTS = {}
     PAGES = {}
