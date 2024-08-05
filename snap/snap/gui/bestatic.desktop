@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=bestatic
+Exec=bestatic
+Icon=${SNAP}/meta/gui/bestatic.png
+Terminal=true
+Type=Application
+Categories=Development;Utilities;
