@@ -32,4 +32,8 @@ apps:
   bestatic:
     command:
       "bin/bestatic"
+    plugs:
+      - network
+      - network-bind
+      - home
 
