@@ -15,8 +15,10 @@ from bestatic.quickstart import quickstart
 from bestatic.newcontent import newpost, newpage
 import bestatic
 
+
 def run_server(directory):
     bestatic_serv(directory) if directory else bestatic_serv()
+
 
 def run_watcher(config, *directoryname):
     class RebuildEventHandler(watchdog.events.PatternMatchingEventHandler):
@@ -88,6 +90,7 @@ def run_watcher(config, *directoryname):
         observer.stop()
         observer.join()
     return None
+
 
 def main():
     parser = argparse.ArgumentParser(description="Program to accept command-line inputs in Bestatic...")
@@ -175,9 +178,8 @@ def main():
             raise FileNotFoundError(
                 f"Theme directory does not exist! Please make sure a proper theme is present inside 'themes' directory")
         generator(**config)
-        print("Bestatic has completed execution! Now it will exit soon...")
+        print("Bestatic has completed execution...")
         time.sleep(1)
-        sys.exit(1)
 
     if args.directory:
         shutil.rmtree(args.directory) if os.path.exists(args.directory) else None
