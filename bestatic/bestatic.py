@@ -152,14 +152,15 @@ def main():
             newpage(args.filepath)
     else:
         current_directory = os.getcwd()
-        if not os.path.isfile(os.path.join(current_directory,"config.yaml")) or not os.path.exists(os.path.join(current_directory,"themes")):
+        if not os.path.isfile(os.path.join(current_directory, "config.yaml")) or not os.path.exists(
+                os.path.join(current_directory, "themes")):
             print("\nThank you for trying out Bestatic!\n"
                   "Please note that you need to have have a 'config.yaml' file and 'themes' directory within the working directory "
                   "to correctly build the site.\nYou can generate a config.yaml file by running 'bestatic quickstart'. \n"
                   "You can download a theme from the GitHub repo.\n"
                   "After having those in current directory, please run the program again.\n\n"
                   "This program will exit soon. Please visit https://www.bestaticpy.com for more information.\n")
-            time.sleep(2)
+            time.sleep(4)
             sys.exit(1)
         with open("config.yaml", mode="rb") as ft:
             config = yaml.safe_load(ft)
@@ -174,6 +175,9 @@ def main():
             raise FileNotFoundError(
                 f"Theme directory does not exist! Please make sure a proper theme is present inside 'themes' directory")
         generator(**config)
+        print("Bestatic has completed execution! Now it will exit soon...")
+        time.sleep(1)
+        sys.exit(1)
 
     if args.directory:
         shutil.rmtree(args.directory) if os.path.exists(args.directory) else None
@@ -196,5 +200,7 @@ def main():
         bestatic_serv(args.directory) if args.directory else bestatic_serv()
     return None
 
+
 if __name__ == '__main__':
+    multiprocessing.freeze_support()
     main()
