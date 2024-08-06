@@ -28,38 +28,37 @@ def run_watcher(config, *directoryname):
             self.config = config
             dir_ignore = os.path.join(os.getcwd(), directoryname[0]) if directoryname[0] else None
             if directoryname[0]:
-                super().__init__(patterns=['*'], ignore_patterns=['*~', os.path.join(os.getcwd(), "_output"),
+                super().__init__(patterns=['*'], ignore_patterns=['*~', '.*', os.path.join(os.getcwd(), "_output"),
                                                                   dir_ignore], ignore_directories=True)
             else:
-                super().__init__(patterns=['*'], ignore_patterns=['*~', os.path.join(os.getcwd(), "_output")],
+                super().__init__(patterns=['*'], ignore_patterns=['*~', '.*', os.path.join(os.getcwd(), "_output")],
                                  ignore_directories=True)
 
         def on_any_event(self, event):
-            if not event.is_directory:
+            if not event.is_directory and event.event_type in ["modified", "created", "moved", "deleted"]:
                 print(f"Event type: File {event.event_type}")
                 print(f"File Path: {event.src_path}")
-                if event.event_type in ["modified", "created", "moved", "deleted"]:
-                    # current_time = datetime.datetime.now()
-                    # if (current_time - RebuildEventHandler.last_rebuild_time) > self.delay:
-                    print("Triggering rebuild...")
-                    if event.src_path.endswith("config.yaml"):
-                        print("Detected configuration change...")
-                        with open("config.yaml", mode="rb") as ft:
-                            self.config = yaml.safe_load(ft)
-                        if not os.path.exists(os.path.join(os.getcwd(), "themes", config["theme"])):
-                            raise FileNotFoundError(
-                                f"Theme directory does not exist! Please make sure a proper theme is present inside "
-                                f"the 'themes' directory")
-                    generator(**self.config)
+                # current_time = datetime.datetime.now()
+                # if (current_time - RebuildEventHandler.last_rebuild_time) > self.delay:
+                print("Triggering rebuild...")
+                if event.src_path.endswith("config.yaml"):
+                    print("Detected configuration change...")
+                    with open("config.yaml", mode="rb") as ft:
+                        self.config = yaml.safe_load(ft)
+                    if not os.path.exists(os.path.join(os.getcwd(), "themes", config["theme"])):
+                        raise FileNotFoundError(
+                            f"Theme directory does not exist! Please make sure a proper theme is present inside "
+                            f"the 'themes' directory")
+                generator(**self.config)
 
-                    if directoryname[0] and os.path.exists(directoryname[0]):
-                        shutil.rmtree(directoryname[0])
-                        os.rename("_output", directoryname[0])
-                    else:
-                        pass
-                    print("Rebuild is sucessful!!\nClick http://localhost:8080 to visit "
-                          "the live website again.\nMonitoring files again...\n"
-                          "Press Ctrl+C to stop anytime...")
+                if directoryname[0] and os.path.exists(directoryname[0]):
+                    shutil.rmtree(directoryname[0])
+                    os.rename("_output", directoryname[0])
+                else:
+                    pass
+                print("Rebuild is successful!!\nClick http://localhost:8080 to visit "
+                        "the live website again.\nMonitoring files again...\n"
+                        "Press Ctrl+C to stop anytime...")
 
     event_handler = RebuildEventHandler()
     observer = watchdog.observers.Observer()
@@ -161,7 +160,9 @@ def main():
                   "Please note that you need to have have a 'config.yaml' file and 'themes' directory within the working directory "
                   "to correctly build the site.\nYou can generate a config.yaml file by running 'bestatic quickstart'. \n"
                   "You can download a theme from the GitHub repo.\n"
-                  "After having those in current directory, please run the program again.\n\n"
+                  "After having those in current directory, please run the program again.\n"
+                  "If you are starting the program graphically from desktop or start manu icon, please retry launching "
+                  "it from the command line and from the correct directory. \n\n"
                   "This program will exit soon. Please visit https://www.bestaticpy.com for more information.\n")
             time.sleep(4)
             sys.exit(1)
