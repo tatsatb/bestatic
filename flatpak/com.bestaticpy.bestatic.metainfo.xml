@@ -21,6 +21,39 @@
   </developer>
 
   <releases>
+    <release version="0.0.24" date="2024-08-04">
+      <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.25</url>
+      <description>
+        <p>Fixed some typos and print statements.</p>
+          <ul>
+            <li>Fixed some typos and print statements.</li>
+          </ul>
+      </description>
+    </release>
+    <release version="0.0.24" date="2024-08-04">
+      <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.24</url>
+      <description>
+        <p>Fixed wrong sys.exit.</p>
+          <ul>
+            <li>Fixed wrong sys.exit.</li>
+          </ul>
+      </description>
+    </release>
+    <release version="0.0.23" date="2024-08-04">
+      <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.23</url>
+      <description>
+        <p>Added features</p>
+          <ul>
+            <li>Live reload has been implemented.</li>
+            <li>The static-content directory copy to destination directory has been added.</li>
+            <li>The newpost and newpath can now create posts and pages at specific paths.</li>
+            <li>Quickstart slugs have been updated.</li>
+            <li>Bestatic tag has been added (which can be turned off via config.yaml).</li>
+            <li>Help messages have been cleaned up and rewritten.</li>
+            <li>Windows installer now works correctly.</li>
+          </ul>
+      </description>
+    </release>
     <release version="0.0.22" date="2024-07-16">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.22</url>
       <description>
