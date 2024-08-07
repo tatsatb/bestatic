@@ -21,7 +21,7 @@
   </developer>
 
   <releases>
-    <release version="0.0.24" date="2024-08-04">
+    <release version="0.0.25" date="2024-08-06">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.25</url>
       <description>
         <p>Fixed some typos and print statements.</p>
@@ -30,7 +30,7 @@
           </ul>
       </description>
     </release>
-    <release version="0.0.24" date="2024-08-04">
+    <release version="0.0.24" date="2024-08-05">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.24</url>
       <description>
         <p>Fixed wrong sys.exit.</p>
