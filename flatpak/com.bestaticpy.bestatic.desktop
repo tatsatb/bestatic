@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=bestatic
+Exec=bestatic
+Icon=com.bestaticpy.bestatic.png
+Terminal=true
+Type=Application
+Categories=Development;Utility;
