@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Bestatic"
-#define MyAppVersion "0.0.23"
+#define MyAppVersion "0.0.25"
 #define MyAppPublisher "Tatsat Banerjee"
 #define MyAppURL "https://www.bestaticpy.com"
 #define MyAppExeName "bestatic.exe"
@@ -49,7 +49,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: modifypath; Description: Add application directory to your environmental path; Flags: unchecked
+Name: modifypath; Description: Add application directory to your environmental path;
 
 [Files]
 Source: "C:\Python_Data\ssg_custom\Bestatic-new\New folder_new\Bestatic-0.0.11-new\Bestatic-0.0.11-new-pyinstaller\bestatic\New folder\dist\bestatic\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
