@@ -1,0 +1,155 @@
+<div class="sticky">
+	<nav class="navbar navbar-expand-lg bg-tbbg navbar-light">
+		<div class="container">
+		  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+		  <a class="navbar-brand me-auto" href="/">
+
+                          <svg class="scaled-svg-nav" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 525.37 189"><defs><style>.cls-1,.cls-2{fill:#56b6c2;}.cls-2{font-size:120px;font-family:LMRomanDemi10-Regular, Latin Modern Roman Demi;}.cls-3{fill:#da6465;}</style></defs><title>Bestatic Logo</title><g id="Linescans"><path class="cls-1" d="M72.83,63.67,63,59.2H51.71V53.56H97.06c17.4,0,25.8,10,25.8,20.64,0,8.88-6.24,16.32-17.76,18.6,14.16,1.8,21,10.68,21,20.76,0,11.64-8.28,22.32-25.92,22.32H51.71v-5.64H63V71.5M78.7,65.25v1.13m0,0v24.5h14c9.72,0,13.08-7.8,13.08-16.68,0-15-8.16-15-10.32-15H78.7v6.05m27.24,35.59c-2.76-5.64-6.6-5.64-9-5.64H78.7v35h17a10.68,10.68,0,0,0,10.08-5.4c1.56-2.64,2.64-6.36,2.64-11.52C108.46,112.24,108.46,105.64,105.94,100.84Z"/><text class="cls-2" transform="translate(129 136)">est<tspan class="cls-3" x="150.12" y="0">atic</tspan></text></g></svg>
+
+
+          </a>
+
+
+		  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+
+                <li class="nav-item ps-3">
+                    <a class="nav-link" href="/docs">Docs</a>
+                </li>
+
+                <li class="nav-item ps-3">
+                    <a class="nav-link" href="/themes">Themes</a>
+                </li>
+
+                <li class="nav-item ps-3">
+                    <a class="nav-link" target="_blank" href="https://github.com/tatsatb/bestatic">GitHub</a>
+                </li>
+
+
+
+{#                    {% for item in navi.values() %}#}
+{#                <li class="nav-item ps-3">#}
+{#                    <a class="nav-link" href="/{{ item["slug"] }}">{{ item["title"] }}</a>#}
+{#                </li>#}
+{#                    {% endfor %}#}
+                <li class="nav-item ps-3">
+                    <a class="nav-link" href="/posts">Blog</a>
+                </li>
+			</ul>
+			<form class="d-flex">
+			  <input class="form-control me-2" type="search" placeholder="Search the docs" aria-label="Search" id="search-input">
+			</form>
+		  </div>
+		</div>
+	  </nav>
+	</div>
+
+<div class="search-results" id="search-container">
+    <div id = "divToHide">
+<div class="row">
+
+      <div class="col-sm-12  col-md-9 offset-md-2 col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
+<section>
+<h4><a target="_blank"></a></h4>
+<div class="search-preview"></div>
+</section>
+</div>
+</div>
+        </div>
+</div>
+
+<script>
+        const searchInput = document.getElementById('search-input');
+        const searchContainer = document.getElementById('search-container');
+
+        searchInput.addEventListener('input', () => {
+            // Check if the search input has a value (i.e., user is typing)
+            if (searchInput.value.trim()) {
+                searchContainer.style.border = '0px solid #b36919';
+                searchContainer.style.color = '#ffffff';
+                searchContainer.style.backgroundColor = '#373a44';
+            } else {
+                searchContainer.style.border = 'none'; // No border when no input
+                searchContainer.style.backgroundColor = 'transparent'; // No background color
+            }
+        });
+
+    </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2" defer></script>
+<script src="{{root_path}}/static/js/fuse-search.js" defer></script>
+
+    <div class="stickybutton">
+    <div class="container" style="padding-bottom: 10px; padding-top: 18px">
+        		  <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo04" aria-controls="navbarTogglerDemo04" aria-expanded="false" aria-label="Toggle navigation" id="scrollToTopButton" >Toggle List of Contents
+		</button>
+
+    </div>
+    </div>
+
+	<div class="container">
+
+		<div class="row">
+
+			<div class="col-md-4 col-sm-12">
+
+			<div class="stickydoc">
+
+				<div class=class="collapse" id="navbarTogglerDemo04">
+				<nav id="navbar-example" class="navbar navbar-light flex-column align-items-stretch p-3 bg-dark">
+					<a class="navbar-brand" href="#" style="color: #52aeee; font-size: 18px; font-weight: bold;">Content</a>
+					<nav class="nav nav-pills flex-column">
+					<a class="nav-link main-link" href="/docs/">Welcome</a>
+					<a class="nav-link main-link" href="/docs/quickstart/">Quickstart</a>
+					<a class="nav-link main-link" href="/docs/installation/">Installation</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="/docs/installation#windows">Windows</a>
+						<a class="nav-link ms-3" href="/docs/installation#linux"> Linux</a>
+						<a class="nav-link ms-3" href="/docs/installation#macos"> macOS</a>
+						<a class="nav-link ms-3" href="/docs/installation#pip"> Using pip</a>
+					</nav>
+					<a class="nav-link main-link" href="/docs/content-management/">Content Management</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="/docs/content-management#newpagepost">Creating new content</a>
+						<a class="nav-link ms-3" href="/docs/content-management#frontmatter">Front matter</a>
+						<a class="nav-link ms-3" href="/docs/content-management#filetree">Directory Structure</a>
+						<a class="nav-link ms-3" href="/docs/content-management#homepage">Managing the homepage</a>
+						<a class="nav-link ms-3" href="/docs/content-management#comments">Commenting systems</a>
+						<a class="nav-link ms-3" href="/docs/content-management#pagination">Paginating the blog</a>
+						<a class="nav-link ms-3" href="/docs/content-management#blogremove">Removing the blog</a>
+						<a class="nav-link ms-3" href="/docs/content-management#search">Search</a>
+						<a class="nav-link ms-3" href="/docs/content-management#sitemap">Sitemap</a>						
+
+					</nav>
+					<a class="nav-link main-link" href="/docs/config-file/">Configuration File</a>							
+					<a class="nav-link main-link" href="/docs/markdown-processing/">Markdown Processing</a>					
+					<a class="nav-link main-link" href="/docs/CLI/">Command Line Options</a>
+					<a class="nav-link main-link" href="/docs/themes/">Themes</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="/docs/themes#use">Using a theme</a>
+						<a class="nav-link ms-3" href="/docs/themes#create">Creating a theme</a>
+					</nav>
+					<a class="nav-link main-link" href="/docs/deployment/">Deployment</a>
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link ms-3" href="/docs/deployment#github">GitHub pages</a>
+						<a class="nav-link ms-3" href="/docs/deployment#gitlab">GitLab pages</a>
+						<a class="nav-link ms-3" href="/docs/deployment#cloudflare">Cloudflare pages</a>
+						<a class="nav-link ms-3" href="/docs/deployment#netlify">Netlify</a>
+						<a class="nav-link ms-3" href="/docs/deployment#vercel">Vercel</a>
+						<a class="nav-link ms-3" href="/docs/deployment#render">Render</a>
+						<a class="nav-link ms-3" href="/docs/deployment#manual">Manual Deployment</a>
+					</nav>
+
+					</nav>
+				</nav>
+			</div>
+			</div>
+			</div>
+
+
+
+

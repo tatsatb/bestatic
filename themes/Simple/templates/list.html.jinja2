@@ -1,0 +1,64 @@
+{% extends "layout3.html.jinja2" %}
+{% block title %}Blog Page | {{ title}}{% endblock %}
+{% block description %}A list of all the posts on {{ title}}{% endblock %}
+{% block content %}
+
+
+
+    <div class="container">
+     <div class="row">
+      <div class="col-sm-10 offset-sm-1 col-md-9 offset-md-1 col-lg-8 offset-lg-2 col-xl-8 offset-lg-2">
+
+<h2 class="tbh2"><br/>Blog Page {{page_index+1}} of {{page_range}}</h2>
+<br>
+
+{% if page_range !=1 %}
+          {% if page_index == 0 %}
+<p class="nextpage"><a href="/posts{{ page_index+2 }}">Next Page</a></p>
+{% elif page_index == 1 and page_range !=1 %}
+<div class="prevpage"><a href="/posts">Previous Page</a>
+<span class="nextpage"><a href="/posts{{ page_index+2 }}">Next Page</a></span>
+
+
+</div>
+{% elif page_index == page_range-1 %}
+<p class="prevpage"><a href="/posts{{ page_index }}">Previous Page</a></p>
+{% else %}
+
+<div class="prevpage"><a href="/posts{{ page_index }}">Previous Page</a>
+              <span class="nextpage"><a href="/posts{{ page_index+2 }}">Next Page</a></span>
+</div>
+{% endif %}
+{% endif %}
+
+<br><br>
+        {% for name in post %}
+            <div>
+        <h3 class="tbh3">{{ post[name].metadata["title"] }}</h3>
+          <p class="myptag">Posted on {{ post[name].metadata["date"] }}</p>
+
+          {%  if post[name].tags %}
+         <small> Tags: {% for tag in post[name].tags %}
+            <a href="{{root_path}}/post/tags/{{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %} </small>
+          {% endif %}
+
+        <p>{{ post[name].summary }}</p></ul>
+            {% if post[name].path_info %}
+        <p class="myreadmore"><a href="/post/{{ post[name].path_info }}/{{ post[name].slug }}">Read More</a></p>
+            {% else %}
+        <p class="myreadmore"><a href="/post/{{ post[name].slug }}">Read More</a></p>
+              {% endif  %}
+                <br><br>
+            </div>
+        {% endfor %}
+
+
+
+</div>
+</div>
+
+    </div>
+
+
+{% endblock %}

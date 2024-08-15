@@ -84,7 +84,7 @@ def generator(**config):
         def parse_data(self):
             with open(self.path_of_md, 'r', encoding='utf-8') as f:
                 self.content = markdown(f.read(), extensions=[
-                    "meta", "attr_list", "tables", codehilite.CodeHiliteExtension(linenos="inline"), "fenced_code",
+                    "meta", "attr_list", "tables", codehilite.CodeHiliteExtension(linenos="table"), "fenced_code",
                     "customblocks", 'pymdownx.emoji'], extension_configs={
                     "pymdownx.emoji": {
                         "emoji_index": emoji.twemoji,

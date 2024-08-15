@@ -1,0 +1,55 @@
+{% if typeof == "home" or typeof == "pages" or typeof == "lists" %}
+{% set css_path = "/static/css" %}
+{% set Image_path = "/static/Images" %}
+{% set root_path = "" %}
+{% elif typeof == "tags" %}
+{% set css_path = "/static/css" %}
+{% set Image_path = "/static/Images" %}
+{% set root_path = "" %}
+{% else %}
+{% set css_path = "/static/css" %}
+{% set Image_path = "/static/Images" %}
+{% set root_path = "" %}
+{% endif %}
+{% if post is defined %}
+    {% set katex = post.katex %}
+{% endif %}
+{% if page is defined %}
+    {% set katex = page.katex %}
+{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    {% include 'partials/head.html.jinja2' -%}
+
+    {% if katex == True %}
+        {% include 'partials/katex.html.jinja2' %}
+    {% endif %}
+
+    <meta name="description" content="{% block description %}{{ description }}{% endblock %}"/>
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    </head>
+
+
+    <body>
+    <script src="{{ root_path }}/static/js/vanilla-back-to-top.min.js"></script>
+    <script>addBackToTop({
+      diameter: 56,
+      backgroundColor: 'rgb(12,64,201)',
+      textColor: '#fff'
+    })</script>
+
+    {% include 'partials/nav.html.jinja2' %}
+    {% include 'partials/header.html.jinja2' %}
+
+
+    {% block content %} {% endblock %}
+
+    <br>
+
+    {% include 'partials/footer.html.jinja2' %}
+
+
+    </body>
+
+</html>

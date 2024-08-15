@@ -1,0 +1,104 @@
+{% extends "layout3.html.jinja2" %}
+{% block title %}{{post.metadata["title"]}} | {{ title}}{% endblock %}
+{% block description %}{{post.metadata["description"]}}{% endblock %}
+{% block content %}
+
+
+    <div class="container">
+     <div class="row">
+      <div class="col-sm-10 offset-sm-1 col-md-9 offset-md-1 col-lg-8 offset-lg-2 col-xl-8 offset-lg-2">
+
+<h3 class="tbh3"><br/>{{post.metadata["title"]}}</h3>
+<br><br>
+        <b><small>Posted on {{post.metadata["date"]}} </small></b>
+      <br>
+{#        <small>Tags: {{ post.tags|join(', ') }}#}
+{# </small>#}
+
+      <small>
+      {% if post.tags %}
+          Tags:
+          {% for tag in post.tags %}
+    <a href="/post/tags/{{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+{% endfor %}
+    {% endif %}
+
+      </small>
+          <br><br>
+    {{post.content}}
+
+          {% if next_slug != None %}
+
+{#          <p style="float:right"><a href="{{ root_path }}/posts.html">View list#}
+{#              of all blog posts </a></p>#}
+
+              <p style="float:right"><a href="/post/{{ next_slug }}">View Next Post </a></p>
+
+        {% endif %}
+
+      {% if prev_slug != None %}
+
+          <p style="float:left"><a href="/post/{{ prev_slug }}">View Previous Post </a></p>
+
+        {% endif %}
+
+            <p style="text-align: center"><a href="/posts">View list of all blog posts </a></p>
+
+
+
+
+
+                <br><br>
+
+
+      {% if disqus != False %}
+<div id="disqus_thread"></div>
+<script>
+    /**
+    *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+    /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    s.src = 'https://{{disqus}}.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    {% endif %}
+
+
+{% if giscus != False %}
+    <script src="https://giscus.app/client.js"
+        data-repo={{ giscus }}
+        data-repo-id="R_kgDOMP3Deg"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMP3Des4CgecL"
+        data-mapping="url"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="dark_protanopia"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+</script>
+      {% endif %}
+
+
+
+
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+

@@ -4,6 +4,7 @@ def quickstart(*theme):
     import frontmatter
     import datetime
 
+
     theme = "Amazing" if not theme else theme
 
     current_directory = os.getcwd()
@@ -22,13 +23,15 @@ def quickstart(*theme):
 
     fields = ["title", "description"]
 
-    for field in fields:
-        while not config_dict[field]:
-            value = input(f"Enter the {field} of the website: ")
-            config_dict[field] = value
 
-            if not config_dict[field]:
+    for field in fields:
+        while True:
+            value_field = input(f"Enter the {field} of the website: ")
+            config_dict[field] = value_field
+            if config_dict[field] == "":
                 print(f"{field.capitalize()} cannot be empty! Please try again. ")
+            else:
+                break
 
     output_file = "config.yaml"
 

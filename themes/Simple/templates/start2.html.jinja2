@@ -1,0 +1,106 @@
+{% extends "layout2.html.jinja2" %}
+
+
+{% block content %}
+
+
+					<section class="main-section" id="Intro">
+						<h3 class="tbh3">
+							Bestatic Documentation
+						</h3>
+						<p>
+							Bestatic is a minimal yet  fully-featured static site generator built with Python and Jinja2 template engine.
+							<br/><br/>
+							Please browse through the pages listed below to get started and to explore in-depth.
+                            							<br/><br/>
+						</p>
+
+
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Quickstart</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">Qucikly learn how to build a site with Bestatic, without delving into nitty-gritty technical details.</p>
+									<a href="{{root_path}}/docs/quickstart" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Installation</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">Learn how to install Bestatic in different platforms such as Windows, Linux, and macOS (and in development mode).</p>
+									<a href="{{root_path}}/docs/installation" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+
+                            <div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Content Management</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">Learn how Bestatic works: templates, themes, blogs, config file, search functions, sitemaps, and some more stuff.</p>
+									<a href="{{root_path}}/docs/content-management" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+
+                            <div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Configuration File</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">Learn how you can easily alter the configuration settings of your website using a .yaml file. </p>
+									<a href="{{root_path}}/docs/config-file" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+
+                            <div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Markdown Processing</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">Learn how Bestatic process the markdown files (the building block of your website) and what add-ons are available. </p>
+									<a href="{{root_path}}/docs/markdown-processing" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+
+                            <div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Command Line Options</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">This page lists all the command line options that Bestatic provides and tell you how to use them.</p>
+									<a href="{{root_path}}/docs/CLI" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+
+                            <div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Themes</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">Learn how Jinja2 templates are created and stitched together into a Bestatic theme (you can create one too!).</p>
+									<a href="{{root_path}}/docs/themes" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+
+                            <div class="col-sm-6">
+								<div class="card text-white bg-card border-info mb-3">
+								<div class="card-body">
+									<h5 class="card-title">Deployment</h5>
+									<p class="card-text" style="color: rgba(255,255,255,0.99);">Compiled Bestatic site can be deployed basically anywhere. Learn how to do automate it on popular platforms.</p>
+									<a href="{{root_path}}/docs/deployment" class="btn btn-info">Read More</a>
+								</div>
+								</div>
+							</div>
+
+							</div>
+
+
+					</section>
+							<br/><br/>
+
+
+{% endblock %}

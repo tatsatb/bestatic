@@ -136,8 +136,8 @@ def main():
 
         generator(**config)
 
-        config = quickstart()
-        generator(**config)
+        # config = quickstart()
+        # generator(**config)
     elif args.action == "version":
         print(f'Bestatic version: {bestatic.__version__}')
     elif args.action == "newpost":

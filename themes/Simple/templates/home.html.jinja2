@@ -1,0 +1,124 @@
+{% extends "layout.html.jinja2" %}
+
+
+
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+
+<div class="container px-4 py-4">
+<br/><br/><br/><br/>
+  <div class="row justify-content-center">
+    <div class="col-md-3 col-sm-12 box mx-3 my-2">
+    <h3 class="tbh3"><span class="material-symbols-outlined" style="font-size:42px">
+install_desktop
+</span><br/>Step 1</h3>
+      <p>Install Bestatic graphically. Single binary file. No need to worry about dependencies or custom package managers.</p>
+    </div>
+    <div class="col-md-3 col-sm-12 box mx-3 my-2">
+      <h3 class="tbh3"><i class="bi bi-filetype-md" style="font-size:42px"></i><br/>Step 2</h3>
+
+      <p>Get a theme and write your content in simple markdown. If you wish, customize everything using Jinja2. Then, run <kbd>bestatic</kbd>. </p>
+    </div>
+    <div class="col-md-3 col-sm-12 box mx-3 my-2">
+      <h3 class="tbh3"><i class="bi bi-git" style="font-size:42px"></i><br/>Step 3</h3>
+      <p>Bestatic will generate your website and/or blog that you can deploy for free, using git-based platforms or your own server.</p>
+    </div>
+  </div>
+ <br/><br/> 
+</div>
+ 
+
+<div class="container px-5 py-5">
+<div class="row justify-content-left">
+<div class="col-md-12 mx-3 my-2">
+
+
+{# <h2> Why <i>Bestatic</i>? Because Bestatic is
+  <a href="" class="typewrite" data-period="2000" data-type='[ "easy to install...", "simple to use...", "minimal by design...", "pretty powerful and flexible..." ]'>
+    <span class="wrap"></span>
+  </a>
+</h2> #}
+
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11"></script>
+
+<h2 class="tbh2">
+  Why <i>Bestatic</i>? Because Bestatic is
+  <div id="typed-strings">
+    <p>cool!</p>,
+    <p><mark>easy to install...</mark></p>,
+    <p><mark>simple to use...</mark></p>,
+    <p><mark>minimal by design...</mark></p>,
+    <p><mark>free and open source...</mark></p>,
+    <p><mark>pretty powerful and flexible!!</mark></p>
+  </div>
+  <span id="typed"><!-- content will be typed here --></span>
+  <br/><br/>
+</h2>
+
+<script>
+const typed = new Typed('#typed', {
+  stringsElement: '#typed-strings',
+  typeSpeed: 54,
+  backDelay: 1000,
+  loop: true,
+  loopCount: 5,
+  cursorChar: '<mark>_</mark>'
+});
+</script>
+
+
+
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+<div class="container px-sm-2 py-sm-2">
+<br/><br/>
+  <div class="row justify-content-center">
+    <div class="col-md-4 col-sm-12">
+    <h5>Blog-aware</h5>
+      <p>Customizable list pages for blog posts, reverse chronological order of posts, tags, comments, URL customizations, RSS feeds - All standard good stuff are already included.</p>
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <h5>Feature-rich</h5>
+
+      <p>Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? We have all these things out-of-the box. </p>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <h5>Flexible</h5>
+      <p>Want to configure things? Use simple yaml file. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. </p>
+    </div>
+  </div>
+
+ <div class="row justify-content-center">
+    <div class="col-md-4 col-sm-12">
+    <h5>Scalable</h5>
+      <p>Bestatic ultimately builds a bunch of static files. So, no need for database management, server maintenance, or constant security updates. A hassle-free way to manage large-scale websites. </p>
+    </div>
+    <div class="col-md-3 col-sm-12">
+      <h5>Free and open-source</h5>
+
+      <p>Bestatic is free and open-source software, licensed under GNU GPL-3.0. This will remain free and open-source forever. </p>
+    </div>
+    <div class="col-md-4 col-sm-12">
+      <h5>Simple</h5>
+      <p>Making things simple for you is our goal. Be it via graphical installation, OS Compatiblity, dedicated quickstart, or in-depth <a href="/docs">documentation</a>: We just want to make your Bestatic journey easy and enjoyable for the beginning!</p>
+    </div>
+  </div>
+  <br/><br/> 
+</div>
+
+
+
+
+  </div>
+
+{% endblock %}

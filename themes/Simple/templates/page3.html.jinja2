@@ -1,0 +1,23 @@
+{% extends "layout3.html.jinja2" %}
+{% block title %}{{page.metadata["title"]}} | {{ title}}{% endblock %}
+{% block description %}{{page.metadata["description"]}}{% endblock %}
+{% block content %}
+
+
+<div class="container">
+    <div class="row">
+    <div class="col-sm-10 offset-sm-1 col-md-9 offset-md-1 col-lg-8 offset-lg-2 col-xl-8 offset-lg-2">
+
+
+<h3 class="tbh3"><br/>{{page.metadata["title"]}}</h3>
+
+    {{page.content}}
+
+
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+
