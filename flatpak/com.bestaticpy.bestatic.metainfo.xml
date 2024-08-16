@@ -21,18 +21,18 @@
   </developer>
 
   <releases>
-    <release version="0.0.26" date="2024-08-06">
+    <release version="0.0.26" date="2024-08-15">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.26</url>
       <description>
-        <p>Added features and bug fixes:</p>
+        <p>Addition/changes:</p>
           <ul>
-            <li>Added <code>Simple</code> theme (the current theme for Bestatic official website).</li>
+            <li>Added Simple theme (the current theme for Bestatic official website).</li>
           </ul>          
           <ul>
-            <li>Fixed the issue with <code>bestatic quickstart</code>.</li>
+            <li>Fixed the issue with bestatic quickstart.</li>
           </ul>
           <ul>
-            <li>Changed <i>CodeHilite</i> line numbering to table format.</li>
+            <li>Changed CodeHilite line numbering to table format.</li>
           </ul>
       </description>
     </release>
