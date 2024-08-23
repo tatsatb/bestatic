@@ -84,6 +84,19 @@ def generator(**config):
             with open(path, 'w', encoding="utf-8") as f:
                 f.write(new_content)
 
+    def process_searchindex(searchindex_path, sitename):
+
+        pattern = r'"uri":\s*"/'
+        replacement = rf'"uri": "{sitename}/'
+
+        with open(searchindex_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        new_content = re.sub(pattern, replacement, content)
+
+        with open(searchindex_path, 'w', encoding="utf-8") as f:
+            f.write(new_content)
+
     class Parsing:
         def __init__(self, path_of_md):
             self.path_of_md = path_of_md
@@ -416,7 +429,8 @@ def generator(**config):
 
     if project_site is not None:
         process_directory('_output', project_site)
-
+        searchindex_path = os.path.join(current_directory, "_output", "index.json")
+        process_searchindex(searchindex_path, project_site)
 
     if enable_inject_tag == True:
         with open("_output/index.html", 'r', encoding="utf-8") as fi:
