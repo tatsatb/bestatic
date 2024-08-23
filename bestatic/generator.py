@@ -1,6 +1,7 @@
 def generator(**config):
     import os
     from datetime import datetime
+    from pathlib import Path
     from jinja2 import Environment, PackageLoader
     from markdown import markdown
     from markdown.extensions import codehilite
@@ -66,6 +67,23 @@ def generator(**config):
             filej.write(json_data_temp)
         return None
 
+    def process_directory(directory, sitename):
+        """Recursively processes files in a directory, replacing href and src attributes.
+        """
+
+        for path in Path(directory).rglob('*.html'):  # Search all HTML files
+
+            pattern = r'(href|src)\s*=\s*"/'
+            replacement = rf'\1="{sitename}/'
+
+            with open(path, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            new_content = re.sub(pattern, replacement, content)
+
+            with open(path, 'w', encoding="utf-8") as f:
+                f.write(new_content)
+
     class Parsing:
         def __init__(self, path_of_md):
             self.path_of_md = path_of_md
@@ -128,6 +146,7 @@ def generator(**config):
         if config and "rss_feed" in config else True
     homepage_type = config ["homepage_type"] if config and "homepage_type" in config else "default"
     enable_inject_tag = config ["enable_inject_tag"] if config and "enable_inject_tag" in config else True
+    project_site = config["projectsite"] if config and "projectsite" in config else None
     current_directory = os.getcwd()
 
     shutil.rmtree(os.path.join(current_directory, "_output")) if os.path.exists(
@@ -141,8 +160,13 @@ def generator(**config):
     source = os.path.join(current_directory, "static-content")
     destination = os.path.join(current_directory, "_output", "static-content")
 
+    source_root_import = os.path.join(current_directory, "root-import")
+    destination_root_import = os.path.join(current_directory, "_output")
+
     copy_if_exists(source_theme, destination_theme)
     copy_if_exists(source, destination)
+    copy_if_exists(source_root_import, destination_root_import)
+
 
 
     POSTS = {}
@@ -389,6 +413,10 @@ def generator(**config):
 
         with open('_output/index.rss', 'wb') as rss_file:
             rss_file.write(rss_feed)
+
+    if project_site is not None:
+        process_directory('_output', project_site)
+
 
     if enable_inject_tag == True:
         with open("_output/index.html", 'r', encoding="utf-8") as fi:

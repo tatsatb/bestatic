@@ -126,6 +126,13 @@ def main():
                              "recursively for for any changes in files and then will automatically rebuild the website. "
                              "Use 'bestatic -sa' and reload https://localhost:8080 to see your changes in action live!")
 
+    parser.add_argument("--projectsite", "-p", help="Use this flag if and only if you are deploying your "
+                                                    "website as a Github (or Gitlab) Pages 'Project site' (and not "
+                                                    "as a 'User site'), without a custom domain or subdomain. For example, "
+                                                    "you are deploying your site to https://<username>.github.io/<repository> "
+                                                    "and not to https://<username>.github.io or https://yourdomain.com."
+                                                    " Please use this format: bestatic -p https://<username>.github.io/<repository>.")
+
     args = parser.parse_args()
 
     if args.action == "quickstart":
@@ -178,6 +185,10 @@ def main():
         if not is_exist:
             raise FileNotFoundError(
                 f"Theme directory does not exist! Please make sure a proper theme is present inside 'themes' directory")
+
+        if args.projectsite:
+            config["projectsite"] = args.projectsite
+
         generator(**config)
         print("Bestatic has completed execution...")
         time.sleep(1)
