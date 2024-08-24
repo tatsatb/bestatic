@@ -24,10 +24,10 @@ Some salient features of _Bestatic_ that are probably worth highlighting:
 
 -  **Scalable**. Bestatic ultimately builds a bunch of static files. So, no need for database management, server maintenance, or constant security updates. A hassle-free way to manage large-scale websites.
 
--  **Free and open-source** Of course, Bestatic is free and open-source, licensed under GNU GPL-3.0. This will remain free and open-source forever.
+-  **Free and open-source**. Of course, Bestatic is free and open-source, licensed under GNU GPL-3.0. This will remain free and open-source forever.
 
 
--  **Simple** Making things simple for you is our goal. Be it via graphical installation, OS compatibility, dedicated quickstart, or in-depth documentation: We just want to make your Bestatic journey easy and enjoyable for the beginning!
+-  **Simple**. Making things simple for you is our goal. Be it via graphical installation, OS compatibility, dedicated quickstart, or in-depth documentation: We just want to make your Bestatic journey easy and enjoyable for the beginning!
 
 
 ## Getting started
