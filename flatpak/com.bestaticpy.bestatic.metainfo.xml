@@ -21,6 +21,30 @@
   </developer>
 
   <releases>
+    <release version="0.0.28" date="2024-08-23">
+      <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.28</url>
+      <description>
+        <p>Bug fix:</p>
+          <ul>
+            <li>Correctly generate the search index when the -p or --projectsite flag is used.</li>
+          </ul>          
+      </description>
+    </release>    
+    <release version="0.0.27" date="2024-08-23">
+      <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.27</url>
+      <description>
+        <p>Added features:</p>
+          <ul>
+            <li>Added root-import directory which will be directly copied to the root of the generated site folder (in a nested fashion).</li>
+          </ul>          
+          <ul>
+            <li>Added the -p or --projectsite flag for correctly deploying the website as a "project site" to a Github pages (or Gitlab pages), even without using any custom domain.</li>
+          </ul>
+          <ul>
+            <li>Updated README.md with website links.</li>
+          </ul>
+      </description>
+    </release>    
     <release version="0.0.26" date="2024-08-15">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.26</url>
       <description>
