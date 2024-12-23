@@ -203,7 +203,7 @@ def generator(**config):
     enable_inject_tag = config ["enable_inject_tag"] if config and "enable_inject_tag" in config else True
     post_directory_singular = config["post_directory"]["singular"] if config and "post_directory" in config else "post"
     post_directory_plural = config["post_directory"]["plural"] if config and "post_directory" in config else "posts"
-
+    user_input_n = config['number_of_pages'] if config and "number_of_pages" in config else 1
 
     default_extensions = [
     "meta", 
@@ -389,24 +389,33 @@ def generator(**config):
         POSTS_SORTED_temp.pop(next(iter(POSTS_SORTED_temp)))
 
         next_slugs_list = []
+        next_titles_list = []
         for post in POSTS_SORTED_temp:
             next_slugs_list.append(f"{POSTS[post].path_info}/{POSTS_SORTED[post].slug}")
+            next_titles_list.append(POSTS_SORTED[post].title)
 
         prev_slug = None
-
-        user_input_n = config['number_of_pages'] if config and "number_of_pages" in config else 1
-
-
+        prev_title = None
 
         for ii, (post, value) in enumerate(POSTS_SORTED.items()):
             output_post_path = f"_output/{post_directory_singular}/{POSTS[post].path_info}/{POSTS_SORTED[post].slug}"
 
             tags_in_post_individual = POSTS_SORTED[post].tags
             next_slug = next_slugs_list[ii] if ii < len(next_slugs_list) else None
+            next_title = next_titles_list[ii] if ii < len(next_titles_list) else None
 
-            post_final = post_template.render(title=site_title, description=site_description, post=POSTS_SORTED[post], next_slug=next_slug, prev_slug=prev_slug, taxonomy_yamls=all_taxonomy_yamls, post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav)
+            post_final = post_template.render(title=site_title, description=site_description, 
+                                           post=POSTS_SORTED[post], 
+                                           next_slug=next_slug, prev_slug=prev_slug,
+                                           next_title=next_title, prev_title=prev_title,
+                                           taxonomy_yamls=all_taxonomy_yamls, 
+                                           post_directory_singular=post_directory_singular, 
+                                           post_directory_plural=post_directory_plural, 
+                                           disqus=disqus, giscus=giscus, nav=nav)
 
             prev_slug = f"{POSTS[post].path_info}/{POSTS_SORTED[post].slug}"
+            prev_title = POSTS_SORTED[post].title
+
 
             if "slug" in POSTS_SORTED[post].metadata and POSTS_SORTED[post].metadata["slug"] == "index.html":
                 with open(f"_output/index.html", "w", encoding="utf-8") as file:
