@@ -1,5 +1,5 @@
 include README.md
 include LICENSE
 include requirements.txt
-include config.yaml
+include bestatic.yaml
 graft themes

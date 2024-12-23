@@ -9,6 +9,11 @@ setup(
     version=__version__,
     author='Tatsat Banerjee',
     packages=find_packages(),
+    package_data={
+        '': ['README.md', 'LICENSE', 'requirements.txt', 'bestatic.yaml'],
+        'bestatic': ['themes/*']
+    },
+    include_package_data=True,
     install_requires=[
         'beautifulsoup4 == 4.12.3',
         'Jinja2 == 3.1.4',
