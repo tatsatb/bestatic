@@ -1,7 +1,9 @@
-def bestatic_serv(*directory):
-    import http.server
-    import socketserver
+import http.server
+import socketserver
+import os
+from datetime import datetime, timedelta
 
+def bestatic_serv(*directory):
     PORT = 8080
     DIRECTORY = directory[0] if directory else "_output"
 
@@ -18,8 +20,8 @@ def bestatic_serv(*directory):
             '.wasm': 'application/wasm',
             '.json': 'application/json',
             '.xml': 'application/xml',
-        }
-
+        }        
+        
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=DIRECTORY, **kwargs)
 
@@ -30,12 +32,9 @@ def bestatic_serv(*directory):
         def send_my_headers(self):
             self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
             self.send_header("Pragma", "no-cache")
-            self.send_header("Expires", "0")
-
-        # def do_GET(self):
-        #     if self.path == '/':
-        #         self.path = '/index.html'
-        #     return Handler.do_GET(self)
+            future = (datetime.utcnow() + timedelta(seconds=2))
+            expires = future.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            self.send_header("Expires", expires)
 
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("Serving at port", PORT)
@@ -44,12 +43,9 @@ def bestatic_serv(*directory):
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("Server shutting down ...")
+            print("\nServer shutting down ...")
+        finally:
             httpd.shutdown()
-            httpd.server_close()
-
-    return None
-
 
 if __name__ == '__main__':
     bestatic_serv()

@@ -34,8 +34,7 @@ def generate_sitemap(base_url, folder_path):
         loc.text = f"{base_url}/{items}"
         loc.text = f"{loc.text.replace(chr(92), '/')}"
         lastmod = ET.SubElement(url, "lastmod")
-        lastmod.text = get_last_modified_time(items)
-        ET.SubElement(url, "newline")
+        lastmod.text = get_last_modified_time(items) + "\n"
 
     tree = ET.ElementTree(root)
     tree.write("_output/sitemap.xml", encoding="utf-8", xml_declaration=True)

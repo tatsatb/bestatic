@@ -4,18 +4,19 @@ def generator(**config):
     from pathlib import Path
     from jinja2 import Environment, PackageLoader
     from markdown import markdown
-    from markdown.extensions import codehilite
     from markdown.extensions.toc import slugify
     from pymdownx import emoji
     import frontmatter
     import shutil
     import copy
     import re
-    from bs4 import BeautifulSoup
+    import warnings
+    from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
     from feedgen.feed import FeedGenerator
     import pytz
     import json
     from bestatic import bestaticSitemap
+    import yaml  
 
     def copy_if_exists(source, destination):
         if os.path.exists(source):
@@ -30,6 +31,9 @@ def generator(**config):
         return None
 
     def isolate_tags(taglist):
+        """Split taxonomy terms into list"""
+        if isinstance(taglist, list):
+            return taglist
         taglist_2 = re.split(r'\s|(?<!\d)[,.]|,.', taglist)
         taglist_3 = [tag for tag in taglist_2 if tag]
         taglist_final = list(set(taglist_3))
@@ -97,6 +101,52 @@ def generator(**config):
         with open(searchindex_path, 'w', encoding="utf-8") as f:
             f.write(new_content)
 
+        pattern_2 = r'/index.json'
+        replacement_2 = rf'{sitename}/index.json'
+
+
+    def parse_sections(html_content):
+        """Parse HTML content into sections based on headings with class 'splitsection'"""
+        soup = BeautifulSoup(html_content, 'html.parser')
+        sections = []
+        current_section = {'heading': None, 'content': [], 'index': 0}
+        
+        elements = soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div'])
+        section_index = 0
+        
+        for element in elements:
+            if element.name.startswith('h') and 'splitsection' in element.get('class', []):
+                if current_section['content']:
+                    sections.append(current_section)
+                section_index += 1
+                current_section = {
+                    'heading': element.get_text(),
+                    'content': [],
+                    'index': section_index
+                }
+            else:
+                current_section['content'].append(str(element))
+        
+        if current_section['content']:
+            sections.append(current_section)
+            
+        return sections    
+
+    def load_all_taxonomy_yaml():
+        """Load all taxonomy YAML files from _includes/yamls directory"""
+        taxonomy_yamls = {}
+        yaml_dir = os.path.join(current_directory, '_includes', 'yamls')
+        if os.path.exists(yaml_dir):
+            for yaml_file in os.listdir(yaml_dir):
+                if yaml_file.endswith('.yaml'):
+                    taxonomy_name = os.path.splitext(yaml_file)[0]
+                    yaml_path = os.path.join(yaml_dir, yaml_file)
+                    with open(yaml_path, 'r', encoding='utf-8') as f:
+                        taxonomy_yamls[taxonomy_name] = yaml.load(f, Loader=yaml.Loader)
+        return taxonomy_yamls
+
+
+
     class Parsing:
         def __init__(self, path_of_md):
             self.path_of_md = path_of_md
@@ -113,32 +163,20 @@ def generator(**config):
             self.path_data()
 
         def parse_data(self):
-            with open(self.path_of_md, 'r', encoding='utf-8') as f:
-                self.content = markdown(f.read(), extensions=[
-                    "meta", "attr_list", "tables", codehilite.CodeHiliteExtension(linenos="table"), "fenced_code",
-                    "customblocks", 'pymdownx.emoji'], extension_configs={
-                    "pymdownx.emoji": {
-                        "emoji_index": emoji.twemoji,
-                        "emoji_generator": emoji.to_svg,
-                        "alt": "short",
-                        "options": {
-                            "attributes": {
-                                "align": "absmiddle",
-                                "height": "50px",
-                                "width": "50px"
-                            },
-                        },
-                    },
-                })
 
+            warnings.filterwarnings('ignore', category=MarkupResemblesLocatorWarning)
+
+            with open(self.path_of_md, 'r', encoding='utf-8') as f:
+                self.content = markdown(f.read(), extensions=markdown_extensions, extension_configs=markdown_configs)
                 f.seek(0)
                 self.metadata = frontmatter.load(f).metadata
-                plain_text = ''.join(BeautifulSoup(self.content, 'html.parser').findAll(string=True))
+                initial_clean = BeautifulSoup(self.content, 'html.parser').get_text()
+                plain_text = BeautifulSoup(initial_clean, 'html.parser').get_text(separator=' ').strip()
                 self.text = plain_text
-                self.summary = plain_text[:250] + "..." if len(plain_text) > 250 else plain_text
+                self.summary = plain_text[:summary_length] + "..." if len(plain_text) > summary_length else plain_text
                 self.title = self.metadata["title"]
                 self.slug = self.metadata["slug"] if "slug" in self.metadata else slugify(self.title, separator="-")
-                if "tags" in self.metadata:
+                if "tags" in self.metadata and self.metadata["tags"] is not None:
                     self.tags = isolate_tags(self.metadata["tags"])
                 else:
                     None
@@ -158,7 +196,61 @@ def generator(**config):
     rss_feed = config["rss_feed"] \
         if config and "rss_feed" in config else True
     homepage_type = config ["homepage_type"] if config and "homepage_type" in config else "default"
+    time_format = config["time_format"] if config and "time_format" in config else "%B %d, %Y"
+    timezone_name = config["timezone"] if config and "timezone" in config else "UTC"
+    summary_length = config["summary_length"] if config and "summary_length" in config else 250
+    nav = config["nav"] if config and "nav" in config else None
     enable_inject_tag = config ["enable_inject_tag"] if config and "enable_inject_tag" in config else True
+    post_directory_singular = config["post_directory"]["singular"] if config and "post_directory" in config else "post"
+    post_directory_plural = config["post_directory"]["plural"] if config and "post_directory" in config else "posts"
+
+
+    default_extensions = [
+    "meta", 
+    "attr_list", 
+    "tables",
+    "fenced_code",
+    "customblocks", 
+    "pymdownx.emoji",
+    "codehilite"
+    ]
+
+    default_configs = {
+        "pymdownx.emoji": {
+            "emoji_index": emoji.twemoji,
+            "emoji_generator": emoji.to_svg,
+            "alt": "short",
+            "options": {
+                "attributes": {
+                    "align": "absmiddle",
+                    "height": "50px",
+                    "width": "50px"
+                },
+            },
+        },
+        "codehilite": {
+            "linenos": "table"
+        },
+    }
+    
+    
+    # Process markdown settings
+    if config and "markdown" in config:
+        if config["markdown"].get("markdown_replace", False):
+            markdown_extensions = config["markdown"].get("extensions", [])
+            markdown_configs = config["markdown"].get("extension_configs", {})
+        else:
+            markdown_extensions = default_extensions.copy()
+            markdown_configs = default_configs.copy()
+            if "extensions" in config["markdown"]:
+                markdown_extensions.extend(config["markdown"]["extensions"])
+            if "extension_configs" in config["markdown"]:
+                markdown_configs.update(config["markdown"]["extension_configs"])
+    else:
+        markdown_extensions = default_extensions
+        markdown_configs = default_configs    
+   
+
     project_site = config["projectsite"] if config and "projectsite" in config else None
     current_directory = os.getcwd()
 
@@ -181,6 +273,21 @@ def generator(**config):
     copy_if_exists(source_root_import, destination_root_import)
 
 
+    if config and "comments" in config and config["comments"]["enabled"] is True:
+        if config["comments"]["system"] == "giscus":
+            giscus = config["comments"]["comment_system_id"]
+            disqus = False
+        elif config["comments"]["system"] == "disqus":
+            disqus = config["comments"]["comment_system_id"]
+            giscus = False
+        else:
+            giscus = False
+            disqus = False
+    else:
+        giscus = False
+        disqus = False    
+
+
 
     POSTS = {}
     PAGES = {}
@@ -198,11 +305,15 @@ def generator(**config):
                 PAGES[filename] = Parsing(input_page_path)
 
     env = Environment(loader=PackageLoader("bestatic.generator", os.path.join(working_directory, "templates")))
-
+    
+    def md_filter(text):
+        return markdown(text, extensions=markdown_extensions, extension_configs=markdown_configs)
+    
+    env.filters['markdown'] = md_filter
     env.trim_blocks = True
     env.lstrip_blocks = True
 
-    home_template = None
+    home_template =  None
     page_template = None
     post_template = None
     error_template = None
@@ -211,8 +322,7 @@ def generator(**config):
 
     if os.path.exists(os.path.join(working_directory, "templates", "home.html.jinja2")):
         home_template = env.get_template('home.html.jinja2')
-        home_final = home_template.render(title=site_title, description=site_description,
-                                          typeof="home")
+        home_final = home_template.render(title=site_title, description=site_description, nav=nav)
         with open(f"_output/index.html", "w", encoding="utf-8") as file:
             file.write(home_final)
 
@@ -226,25 +336,28 @@ def generator(**config):
     if os.path.exists(os.path.join(working_directory, "templates", "404.html.jinja2")):
         error_template = env.get_template('404.html.jinja2')
 
+
+
     if page_template:
         for page in PAGES:
 
             output_page_path = f"_output/{PAGES[page].path_info}/{PAGES[page].slug}"
 
-            if PAGES[page].metadata['slug'] == 404 and error_template:
-                page_final = error_template.render(title=site_title, description=site_description,
-                                                   typeof="pages")
+            sections = None
+            if "section" in PAGES[page].metadata and PAGES[page].metadata['section'] is True:
+                sections = parse_sections(PAGES[page].content)
+
+            if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == 404 and error_template:
+                page_final = error_template.render(title=site_title, description=site_description, nav=nav)
             else:
                 if "template" in PAGES[page].metadata:
                     page_template = env.get_template(PAGES[page].metadata['template'])
-                    page_final = page_template.render(title=site_title, description=site_description,
-                                                      page=PAGES[page], typeof="pages")
+                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, disqus=disqus, giscus=giscus, nav=nav)
                 else:
                     page_template = env.get_template('page.html.jinja2')
-                    page_final = page_template.render(title=site_title, description=site_description,
-                                                      page=PAGES[page], typeof="pages")
+                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, disqus=disqus, giscus=giscus, nav=nav)
 
-            if PAGES[page].metadata['slug'] and PAGES[page].metadata['slug'] == "index.html":
+            if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == "index.html":
                 with open(f"_output/index.html", "w", encoding="utf-8") as file:
                     file.write(page_final)
             else:
@@ -257,17 +370,18 @@ def generator(**config):
         try:
             post_template = env.get_template('post.html.jinja2')
             list_template = env.get_template('list.html.jinja2')
-            tags_template = env.get_template('taglist.html.jinja2')
         except FileNotFoundError:
-            raise Exception("The 'post', 'list', and 'taglist' template must exist in the templates directory of "
-                            "theme root directory to process the blog/posts/news items.")
+            raise Exception("The 'post' and 'list' template must exist in the root of the template directory of "
+                            " the theme directory to process the blog/posts/news items.")
     else:
         pass
 
-    if post_template:
 
-        POSTS_SORTED_LIST = sorted(POSTS, key=lambda sorter: datetime.strptime(POSTS[sorter].metadata["date"],
-                                                                               "%B %d, %Y"), reverse=True)
+    if post_template:
+        # Load all taxonomy YAML files
+        all_taxonomy_yamls = load_all_taxonomy_yaml()
+
+        POSTS_SORTED_LIST = sorted(POSTS, key=lambda sorter: datetime.strptime(POSTS[sorter].metadata["date"], time_format), reverse=True)
         POSTS_SORTED = {item: POSTS[item] for item in POSTS_SORTED_LIST}
 
 
@@ -284,44 +398,33 @@ def generator(**config):
 
 
 
-        if config and "comments" in config and config["comments"]["enabled"] is True:
-            if config["comments"]["system"] == "giscus":
-                giscus = config["comments"]["comment_system_id"]
-                disqus = False
-            elif config["comments"]["system"] == "disqus":
-                disqus = config["comments"]["comment_system_id"]
-                giscus = False
-            else:
-                giscus = False
-                disqus = False
-        else:
-            giscus = False
-            disqus = False
-
-
         for ii, (post, value) in enumerate(POSTS_SORTED.items()):
-            output_post_path = f"_output/post/{POSTS[post].path_info}/{POSTS_SORTED[post].slug}"
+            output_post_path = f"_output/{post_directory_singular}/{POSTS[post].path_info}/{POSTS_SORTED[post].slug}"
 
             tags_in_post_individual = POSTS_SORTED[post].tags
             next_slug = next_slugs_list[ii] if ii < len(next_slugs_list) else None
-            post_final = post_template.render(title=site_title, description=site_description,
-                                              post=POSTS_SORTED[post], typeof="posts", next_slug=next_slug,
-                                              prev_slug=prev_slug,
-                                              disqus=disqus, giscus=giscus)
+
+            post_final = post_template.render(title=site_title, description=site_description, post=POSTS_SORTED[post], next_slug=next_slug, prev_slug=prev_slug, taxonomy_yamls=all_taxonomy_yamls, post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav)
+
             prev_slug = f"{POSTS[post].path_info}/{POSTS_SORTED[post].slug}"
 
-            if not os.path.exists(output_post_path):
-                os.makedirs(output_post_path, exist_ok=True)
-            with open(f"{output_post_path}/index.html", 'w', encoding="utf-8") as file:
-                file.write(post_final)
+            if "slug" in POSTS_SORTED[post].metadata and POSTS_SORTED[post].metadata["slug"] == "index.html":
+                with open(f"_output/index.html", "w", encoding="utf-8") as file:
+                    file.write(post_final)
+            else:
+                if not os.path.exists(output_post_path):
+                    os.makedirs(output_post_path, exist_ok=True)
+                with open(f"{output_post_path}/index.html", 'w', encoding="utf-8") as file:
+                    file.write(post_final)
+
 
         split_dicts = split_dict_into_n(POSTS_SORTED, user_input_n)
 
         for jj in range(len(split_dicts)):
-            list_final = list_template.render(title=site_title, description=site_description,
-                                              post=split_dicts[jj], page_index=jj, page_range=len(split_dicts),
-                                              typeof="lists")
-            paginator = "_output/posts" + str(jj + 1) if jj != 0 else "_output/posts"
+
+            list_final = list_template.render(title=site_title, description=site_description, post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, post=split_dicts[jj], page_index=jj, page_range=len(split_dicts), taxonomy_yamls=all_taxonomy_yamls, nav=nav)
+
+            paginator = f"_output/{post_directory_plural}/{jj + 1}" if jj != 0 else f"_output/{post_directory_plural}"
 
             if not os.path.exists(paginator):
                 os.makedirs(paginator, exist_ok=True)
@@ -329,34 +432,69 @@ def generator(**config):
                 file.write(list_final)
 
         if homepage_type == "list":
-            shutil.move("_output/posts/index.html", "_output/index.html")
+            shutil.move("_output/{post_directory_plural}/index.html", "_output/index.html")
 
-        Tag_list = [POSTS_SORTED[item].metadata["tags"] for item in POSTS_SORTED if "tags" in POSTS_SORTED[item].metadata]
-        Tag_list_temp = " ".join(Tag_list)
+        taxonomies = config["taxonomies"] if config and "taxonomies" in config else {
+            "tags": {
+                "taxonomy_template": "taglist.html.jinja2", 
+                "taxonomy_directory": "tags"
+            }
+        }
 
-        Tag_list_final = isolate_tags(Tag_list_temp)
+        def process_taxonomy_terms(items_dict, taxonomy_name, taxonomy_config):
+            """Process items for a given taxonomy (tags, categories, authors etc)"""
+            # Try to load corresponding taxonomy YAML file if it exists
+            taxonomy_yaml = None
+            yaml_path = os.path.join(current_directory, '_includes', 'yamls', f'{taxonomy_name}.yaml')
+            if os.path.exists(yaml_path):
+                with open(yaml_path, 'r', encoding='utf-8') as yaml_file:
+                    taxonomy_yaml = yaml.load(yaml_file, Loader=yaml.Loader)
 
-        for tags in Tag_list_final:
-            output_tag_path = f'_output/post/tags/{tags}'
-            POSTS_tag = {}
-            for item in POSTS_SORTED:
-                tags_in_post_correct = POSTS_SORTED[item].tags
+            terms_list = [items_dict[item].metadata[taxonomy_name] 
+                        for item in items_dict 
+                        if taxonomy_name in items_dict[item].metadata 
+                        and items_dict[item].metadata[taxonomy_name] is not None]
+            
+            terms_list_temp = " ".join(str(t) for t in terms_list)
+            terms_list_final = isolate_tags(terms_list_temp)
+            
+            template = env.get_template(taxonomy_config['taxonomy_template'])
+            
+            for term in terms_list_final:
+                output_path = f'_output/{post_directory_singular}/{taxonomy_config["taxonomy_directory"]}/{term}'
+                filtered_items = {}
+                
+                for item in items_dict:
+                    item_terms = items_dict[item].metadata.get(taxonomy_name, [])
+                    if item_terms:
+                        terms = isolate_tags(item_terms)
+                        if term in terms:
+                            filtered_items[item] = items_dict[item]
+                
+                page_content = template.render(
+                    title=site_title, 
+                    description=site_description, 
+                    post=filtered_items,
+                    post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, 
+                    taxonomy_term=term,
+                    taxonomy_name=taxonomy_name,
+                    taxonomy_directory=taxonomy_config["taxonomy_directory"],
+                    taxonomy_yaml=taxonomy_yaml,
+                    nav=nav
+                )
+                
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path, exist_ok=True)
+                with open(f"{output_path}/index.html", 'w', encoding="utf-8") as file:
+                    file.write(page_content)
 
-                if tags_in_post_correct is not None and tags in tags_in_post_correct:
-                    POSTS_tag[item] = POSTS[item]
-
-            tag_page_final = tags_template.render(title=site_title, description=site_description,
-                                                  post=POSTS_tag, typeof="tags", tags=tags)
-
-            if not os.path.exists(output_tag_path):
-                os.makedirs(output_tag_path, exist_ok=True)
-            with open(f"{output_tag_path}/index.html", 'w', encoding="utf-8") as file:
-                file.write(tag_page_final)
+        for taxonomy_name, taxonomy_config in taxonomies.items():
+            process_taxonomy_terms(POSTS_SORTED, taxonomy_name, taxonomy_config)
 
     json_combined_dict = {}
 
     json_dict_post = {key: {'title': value.title, 'text': value.text,
-                            'slug': f"post/{value.path_info}/{value.slug}" if value.path_info else f"post/{value.slug}"} for
+                            'slug': f"{post_directory_singular}/{value.path_info}/{value.slug}" if value.path_info else f"{post_directory_singular}/{value.slug}"} for
                       key, value in
                       POSTS.items()} if post_template else {}
 
@@ -368,11 +506,11 @@ def generator(**config):
     json_combined_dict = {**json_dict_post, **json_dict_page}
 
     if json_combined_dict:
-        result_dict = [{'uri': f"{value['slug']}", 'title': value['title'], 'content': value['text']}
-                       for
-                       value
-                       in
-                       json_combined_dict.values()]
+        result_dict = [{'uri': f"{value['slug']}", 'title': value['title'] if value['title'] else "Homepage", 'content': value['text']}
+                   for
+                   value
+                   in
+                   json_combined_dict.values()]
 
         result_dict_post = [
             {'uri': f"/{value['slug']}", 'title': value['title'], 'content': value['text']} for
@@ -391,13 +529,13 @@ def generator(**config):
 
     bestaticSitemap.generate_sitemap(siteURL, "_output")
 
-    timezone = pytz.timezone('UTC')
+    timezone = pytz.timezone(timezone_name)
 
     if post_template and rss_feed is True:
         rss_dict_post = {
             key: {'title': value.title, 'text': value.text,
-                  'slug': f"post/{value.path_info}/{value.slug}" if value.path_info else f"{value.slug}",
-                  'date': datetime.strptime(value.metadata["date"], "%B %d, %Y")} for
+                  'slug': f"{post_directory_singular}/{value.path_info}/{value.slug}" if value.path_info else f"{value.slug}",
+                  'date': datetime.strptime(value.metadata["date"], time_format)} for
             key, value in
             reversed(POSTS_SORTED.items())} if post_template else {}
 
@@ -410,7 +548,7 @@ def generator(**config):
 
         fg = FeedGenerator()
         fg.title(site_title)
-        fg.link(href=siteURL + "/posts", rel='alternate')
+        fg.link(href=f"{siteURL}/{post_directory_plural}", rel='alternate')
         fg.description(site_description)
 
         # Add entries from the dictionary
@@ -436,14 +574,14 @@ def generator(**config):
         with open("_output/index.html", 'r', encoding="utf-8") as fi:
             content = fi.read()
 
-        if re.search(r'<meta name="generator" content="Bestatic"/>', content):
+        if re.search(r'<meta name="generator" content="Bestatic" />', content):
             pass
         else:
             head_start_pattern = r'<head>'
             if head_start_pattern == -1:
                 pass
             else:
-                new_content = re.sub(head_start_pattern, head_start_pattern + '\n\t\t<meta name="generator" content="Bestatic"/>', content)
+                new_content = re.sub(head_start_pattern, head_start_pattern + '\n\t\t<meta name="generator" content="Bestatic" />', content)
 
                 with open("_output/index.html", 'w', encoding="utf-8") as file:
                     file.write(new_content)

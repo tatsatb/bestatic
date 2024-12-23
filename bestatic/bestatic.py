@@ -44,7 +44,7 @@ def run_watcher(config, *directoryname):
                 if event.src_path.endswith("config.yaml"):
                     print("Detected configuration change...")
                     with open("config.yaml", mode="rb") as ft:
-                        self.config = yaml.safe_load(ft)
+                        self.config = yaml.load(ft, Loader=yaml.Loader)
                     if not os.path.exists(os.path.join(os.getcwd(), "themes", config["theme"])):
                         raise FileNotFoundError(
                             f"Theme directory does not exist! Please make sure a proper theme is present inside "
@@ -67,7 +67,8 @@ def run_watcher(config, *directoryname):
         "themes",
         "posts",
         "pages",
-        "static-content"
+        "static-content",
+        "_includes"
     ]
 
     for directory in directories_to_watch:
@@ -152,7 +153,14 @@ def main():
             raise ValueError("Please specify filepath to use 'newpost' function.")
         else:
             os.chdir(os.getcwd())
-            newpost(args.filepath)
+            try:
+                with open("config.yaml", mode="rb") as ft:
+                    config = yaml.load(ft, Loader=yaml.Loader)
+                time_format = config.get('time_format', "%B %d, %Y")
+            except:
+                time_format = "%B %d, %Y"  # fallback            
+            newpost(args.filepath, time_format)
+
     elif args.action == "newpage":
         if not args.filepath:
             raise ValueError("Please specify filepath to use 'newpage' function.")
@@ -174,7 +182,7 @@ def main():
             time.sleep(4)
             sys.exit(1)
         with open("config.yaml", mode="rb") as ft:
-            config = yaml.safe_load(ft)
+            config = yaml.load(ft, Loader=yaml.Loader)
         if args.theme:
             config["theme"] = args.theme
 

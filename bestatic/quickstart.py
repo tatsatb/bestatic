@@ -18,6 +18,7 @@ def quickstart(*theme):
     config_dict = {
         "siteURL": "http://example.org",
         "theme": theme,
+        "time_format": "%B %d, %Y",
         "number_of_pages": 1
     }
 

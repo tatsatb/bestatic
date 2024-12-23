@@ -13,6 +13,7 @@ setup(
         'beautifulsoup4 == 4.12.3',
         'Jinja2 == 3.1.4',
         'Markdown == 3.5.2',
+        'markdown-include==0.8.1',
         'MarkupSafe == 2.1.5',
         'Pygments == 2.17.2',
         'python-frontmatter == 1.1.0',
@@ -33,7 +34,7 @@ setup(
             'bestatic = bestatic.bestatic:main'
         ]
     },
-    description="A simple but powerful static-site generator",
+    description="A simple but really powerful static-site generator",
     long_description=description,
     long_description_content_type="text/markdown",
 )
