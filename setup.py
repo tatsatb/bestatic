@@ -16,7 +16,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'beautifulsoup4 == 4.12.3',
-        'Jinja2 == 3.1.4',
+        'chardet == 5.2.0',
+        'Jinja2 == 3.1.5',
         'Markdown == 3.5.2',
         'markdown-include==0.8.1',
         'MarkupSafe == 2.1.5',

@@ -7,16 +7,19 @@ def generator(**config):
     from markdown.extensions.toc import slugify
     from pymdownx import emoji
     import frontmatter
+    import yaml 
     import shutil
     import copy
     import re
     import warnings
+    import chardet
     from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
     from feedgen.feed import FeedGenerator
     import pytz
     import json
     from bestatic import bestaticSitemap
-    import yaml  
+    from bestatic.shortcodes import ShortcodeProcessor
+
 
     def copy_if_exists(source, destination):
         if os.path.exists(source):
@@ -72,21 +75,55 @@ def generator(**config):
         return None
 
     def process_directory(directory, sitename):
-        """Recursively processes files in a directory, replacing href and src attributes.
-        """
-
-        for path in Path(directory).rglob('*.html'):  # Search all HTML files
-
+        """Recursively processes files in a directory, replacing href, src, and url attributes."""
+        
+        # Process HTML files
+        for path in Path(directory).rglob('*.html'):
+            # Process href and src attributes
             pattern = r'(href|src)\s*=\s*"/'
             replacement = rf'\1="{sitename}/'
+            
+            # Add pattern for b-search-file-index
+            pattern_search = r'b-search-file-index\s*=\s*"/'
+            replacement_search = rf'b-search-file-index="{sitename}/'
 
             with open(path, 'r', encoding='utf-8') as f:
                 content = f.read()
 
+            # Apply both replacements
             new_content = re.sub(pattern, replacement, content)
+            new_content = re.sub(pattern_search, replacement_search, new_content)
 
             with open(path, 'w', encoding="utf-8") as f:
                 f.write(new_content)
+
+        # Process CSS files
+        for path in Path(directory).rglob('*.css'):
+            with open(path, 'rb') as f:
+                content = f.read()
+                result = chardet.detect(content)
+                encoding = result['encoding']
+ 
+
+            with open(path, 'r', encoding=encoding) as f:
+                content = f.read()
+                
+                def replace_url(match):
+                    quote = match.group(1) or ''  # Get quote type if present
+                    path = match.group(2)
+                    if quote:
+                        # If quotes exist, use them
+                        return f'url({quote}{sitename}{path}{quote})'
+                    else:
+                        # If no quotes, don't add any
+                        return f'url({sitename}{path})'
+
+                # Pattern matches: url(/path), url('/path'), and url("/path")
+                pattern = r'url\(([\'"])?(/[^\'"\)]+)(?:\1)?\)'
+                content = re.sub(pattern, replace_url, content)
+
+            with open(path, 'w', encoding=encoding) as f:
+                f.write(content)
 
     def process_searchindex(searchindex_path, sitename):
 
@@ -146,7 +183,6 @@ def generator(**config):
         return taxonomy_yamls
 
 
-
     class Parsing:
         def __init__(self, path_of_md):
             self.path_of_md = path_of_md
@@ -159,6 +195,7 @@ def generator(**config):
             self.title = None
             self.slug = None
             self.path_info = None
+            self.shortcode_processor = ShortcodeProcessor() if enable_shortcodes else None
             self.parse_data()
             self.path_data()
 
@@ -167,7 +204,11 @@ def generator(**config):
             warnings.filterwarnings('ignore', category=MarkupResemblesLocatorWarning)
 
             with open(self.path_of_md, 'r', encoding='utf-8') as f:
-                self.content = markdown(f.read(), extensions=markdown_extensions, extension_configs=markdown_configs)
+                content = f.read()
+                # Only process shortcodes if enabled
+                if self.shortcode_processor:
+                    content = self.shortcode_processor.process_content(content)
+                self.content = markdown(content, extensions=markdown_extensions, extension_configs=markdown_configs)
                 f.seek(0)
                 self.metadata = frontmatter.load(f).metadata
                 initial_clean = BeautifulSoup(self.content, 'html.parser').get_text()
@@ -204,6 +245,9 @@ def generator(**config):
     post_directory_singular = config["post_directory"]["singular"] if config and "post_directory" in config else "post"
     post_directory_plural = config["post_directory"]["plural"] if config and "post_directory" in config else "posts"
     user_input_n = config['number_of_pages'] if config and "number_of_pages" in config else 1
+    posts_in_page = config['include_post_in_pages'] if config and "include_post_in_pages" in config else False
+    enable_shortcodes = config["SHORTCODES"] if config and "SHORTCODES" in config else False
+    
 
     default_extensions = [
     "meta", 
@@ -232,8 +276,8 @@ def generator(**config):
             "linenos": "table"
         },
     }
-    
-    
+
+
     # Process markdown settings
     if config and "markdown" in config:
         if config["markdown"].get("markdown_replace", False):
@@ -251,7 +295,13 @@ def generator(**config):
         markdown_configs = default_configs    
    
 
+    
+    
+    
     project_site = config["projectsite"] if config and "projectsite" in config else None
+
+
+
     current_directory = os.getcwd()
 
     shutil.rmtree(os.path.join(current_directory, "_output")) if os.path.exists(
@@ -336,35 +386,6 @@ def generator(**config):
     if os.path.exists(os.path.join(working_directory, "templates", "404.html.jinja2")):
         error_template = env.get_template('404.html.jinja2')
 
-
-
-    if page_template:
-        for page in PAGES:
-
-            output_page_path = f"_output/{PAGES[page].path_info}/{PAGES[page].slug}"
-
-            sections = None
-            if "section" in PAGES[page].metadata and PAGES[page].metadata['section'] is True:
-                sections = parse_sections(PAGES[page].content)
-
-            if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == 404 and error_template:
-                page_final = error_template.render(title=site_title, description=site_description, nav=nav)
-            else:
-                if "template" in PAGES[page].metadata:
-                    page_template = env.get_template(PAGES[page].metadata['template'])
-                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, disqus=disqus, giscus=giscus, nav=nav)
-                else:
-                    page_template = env.get_template('page.html.jinja2')
-                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, disqus=disqus, giscus=giscus, nav=nav)
-
-            if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == "index.html":
-                with open(f"_output/index.html", "w", encoding="utf-8") as file:
-                    file.write(page_final)
-            else:
-                if not os.path.exists(output_page_path):
-                    os.makedirs(output_page_path, exist_ok=True)
-                with open(f"{output_page_path}/index.html", 'w', encoding="utf-8") as file:
-                    file.write(page_final)
 
     if os.path.isdir('posts') and len(os.listdir('posts')):
         try:
@@ -500,6 +521,38 @@ def generator(**config):
         for taxonomy_name, taxonomy_config in taxonomies.items():
             process_taxonomy_terms(POSTS_SORTED, taxonomy_name, taxonomy_config)
 
+    
+    if page_template:
+        for page in PAGES:
+
+            output_page_path = f"_output/{PAGES[page].path_info}/{PAGES[page].slug}"
+
+            sections = None
+            if "section" in PAGES[page].metadata and PAGES[page].metadata['section'] is True:
+                sections = parse_sections(PAGES[page].content)
+
+            if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == 404 and error_template:
+                page_final = error_template.render(title=site_title, description=site_description, nav=nav)
+            else:
+                POSTS_SORTED_in_page = POSTS_SORTED if posts_in_page else None                
+                if "template" in PAGES[page].metadata:
+                    page_template = env.get_template(PAGES[page].metadata['template'])
+                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, post_list = POSTS_SORTED_in_page,post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav)
+                else:
+                    page_template = env.get_template('page.html.jinja2')
+                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, post_list = POSTS_SORTED_in_page,
+                    post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav)
+
+            if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == "index.html":
+                with open(f"_output/index.html", "w", encoding="utf-8") as file:
+                    file.write(page_final)
+            else:
+                if not os.path.exists(output_page_path):
+                    os.makedirs(output_page_path, exist_ok=True)
+                with open(f"{output_page_path}/index.html", 'w', encoding="utf-8") as file:
+                    file.write(page_final)
+    
+    
     json_combined_dict = {}
 
     json_dict_post = {key: {'title': value.title, 'text': value.text,

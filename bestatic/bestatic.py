@@ -41,11 +41,15 @@ def run_watcher(config, *directoryname):
                 # current_time = datetime.datetime.now()
                 # if (current_time - RebuildEventHandler.last_rebuild_time) > self.delay:
                 print("Triggering rebuild...")
-                if event.src_path.endswith("config.yaml"):
+                
+                if event.src_path.endswith(("bestatic.yaml", "config.yaml")):
                     print("Detected configuration change...")
-                    with open("config.yaml", mode="rb") as ft:
+                    config_file = "bestatic.yaml"
+                    if not os.path.isfile(config_file):
+                        config_file = "config.yaml"
+                    with open(config_file, mode="rb") as ft:
                         self.config = yaml.load(ft, Loader=yaml.Loader)
-                    if not os.path.exists(os.path.join(os.getcwd(), "themes", config["theme"])):
+                    if not os.path.exists(os.path.join(os.getcwd(), "themes", self.config["theme"])):
                         raise FileNotFoundError(
                             f"Theme directory does not exist! Please make sure a proper theme is present inside "
                             f"the 'themes' directory")
@@ -99,11 +103,11 @@ def main():
                         help="""
                         How it works:
                         1) 'bestatic version': Prints the currently installed version of bestatic. \t
-                        2) 'bestatic quickstart': Creates a 'config.yaml' file by accepting user input, 
+                        2) 'bestatic quickstart': Creates a 'bestatic.yaml' file by accepting user input, 
                         creates two pages and two posts, and finally build the website in '_output' directory. \t
                         3) 'bestatic newpage filepath' or 'betatic newpost filepath':  Creates a new page (inside './pages' directory)
                         or new post (inside './posts' directory), respectively, at the specified filepath. See 'filepath' argument for more details.
-                        4) 'bestatic' or 'bestatic generator':  If 'config.yaml' file or 'themes' directory is not 
+                        4) 'bestatic' or 'bestatic generator':  If 'bestatic.yaml' file or 'themes' directory is not 
                         present in current working directory, bestatic prints that message.
                         If everything is in order in current working directory, bestatic build your website into '_output' directory.
                         """)
@@ -154,7 +158,11 @@ def main():
         else:
             os.chdir(os.getcwd())
             try:
-                with open("config.yaml", mode="rb") as ft:
+                # Try bestatic.yaml first, then config.yaml as fallback (Introduced in v 0.0.29)
+                config_file = "bestatic.yaml"
+                if not os.path.isfile(config_file):
+                    config_file = "config.yaml"
+                with open(config_file, mode="rb") as ft:
                     config = yaml.load(ft, Loader=yaml.Loader)
                 time_format = config.get('time_format', "%B %d, %Y")
             except:
@@ -169,11 +177,14 @@ def main():
             newpage(args.filepath)
     else:
         current_directory = os.getcwd()
-        if not os.path.isfile(os.path.join(current_directory, "config.yaml")) or not os.path.exists(
-                os.path.join(current_directory, "themes")):
+        config_file = os.path.join(current_directory, "bestatic.yaml")
+        if not os.path.isfile(config_file):
+            config_file = os.path.join(current_directory, "config.yaml")
+        
+        if not os.path.isfile(config_file) or not os.path.exists(os.path.join(current_directory, "themes")):
             print("\nThank you for trying out Bestatic!\n"
-                  "Please note that you need to have have a 'config.yaml' file and 'themes' directory within the working directory "
-                  "to correctly build the site.\nYou can generate a config.yaml file by running 'bestatic quickstart'. \n"
+                  "Please note that you need to have have a 'bestatic.yaml' file and 'themes' directory within the working directory "
+                  "to correctly build the site.\nYou can generate a bestatic.yaml file by running 'bestatic quickstart'. \n"
                   "You can download a theme from the GitHub repo.\n"
                   "After having those in current directory, please run the program again.\n"
                   "If you are starting the program graphically from desktop or start manu icon, please retry launching "
@@ -181,8 +192,10 @@ def main():
                   "This program will exit soon. Please visit https://www.bestaticpy.com for more information.\n")
             time.sleep(4)
             sys.exit(1)
-        with open("config.yaml", mode="rb") as ft:
+
+        with open(config_file, mode="rb") as ft:
             config = yaml.load(ft, Loader=yaml.Loader)
+
         if args.theme:
             config["theme"] = args.theme
 

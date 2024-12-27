@@ -34,12 +34,12 @@ def quickstart(*theme):
             else:
                 break
 
-    output_file = "config.yaml"
+    output_file = "bestatic.yaml"
 
     with open(output_file, "w") as f:
         yaml.dump(config_dict, f, sort_keys=False)
 
-    with open("config.yaml", mode="rb") as ft:
+    with open("bestatic.yaml", mode="rb") as ft:
         config = yaml.safe_load(ft)
 
     post_dict = {
