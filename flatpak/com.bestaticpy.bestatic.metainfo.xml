@@ -12,28 +12,28 @@
   
   <description>
     <p>Bestatic is a simple but powerful static-site generator that you can install graphically without worrying about dependencies. It can simply turn your text files into fully functional websites and blogs.</p>
-
+    
     <p>It is really minimal yet feature-rich. Like every other static-site generator, it can generate a complete website by processing a bunch of markdown files. As a result, it eliminates the need for server-side programming, databases, and constant security updates. The site that <em>Bestatic</em> generates can be served from any web server or host (or even from Git-based platforms, for completely free).</p>
 
     <p>Some salient features of <em>Bestatic</em> that are probably worth highlighting:</p>
     <ul>
     <li>
-    <p><em>Blog-aware</em>. You can easily create your blog/news page along with your website. Customizable list pages for blog posts, reverse chronological order of posts, tags, comments (using Giscus or Disqus), fully customizable URL structures, RSS feeds - All standard good stuff are already included.</p>
+    <em>Blog-aware</em>. You can easily create your blog/news page along with your website. Customizable list pages for blog posts, reverse chronological order of posts, tags, comments (using Giscus or Disqus), fully customizable URL structures, RSS feeds - All standard good stuff are already included.
     </li>
     <li>
-    <p><em>Feature-rich</em>. Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? Configurable navigation? Custom taxonomies (categories, multiple authors, etc.)? We have all these things built-in. Oh yes, unlike many other static-site generators, our multi-column content layout work out of the box.</p>
+    <em>Feature-rich</em>. Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? Configurable navigation? Custom taxonomies (categories, multiple authors, etc.)? We have all these things built-in. Oh yes, unlike many other static-site generators, our multi-column content layout work out of the box.
     </li>
     <li>
-    <p><em>Flexible and extensible</em>. Want to configure things in your way? Use simple yaml files. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. Want to use different markdown plugins or maybe your own custom shortcode? All of these things can de done pretty easily, without any prior knowledge.</p>
+    <em>Flexible and extensible</em>. Want to configure things in your way? Use simple yaml files. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. Want to use different markdown plugins or maybe your own custom shortcode? All of these things can de done pretty easily, without any prior knowledge.
     </li>
     <li>
-    <p><em>Scalable</em>. Bestatic ultimately builds a bunch of static files. So, no need for database management, server maintenance, or constant security updates. A hassle-free way to manage large-scale websites.</p>
+    <em>Scalable</em>. Bestatic ultimately builds a bunch of static files. So, no need for database management, server maintenance, or constant security updates. A hassle-free way to manage large-scale websites.
     </li>
     <li>
-    <p><em>Free and open-source</em>. Of course, Bestatic is free and open-source, licensed under GNU GPL-3.0. This will remain free and open-source forever.</p>
+    <em>Free and open-source</em>. Of course, Bestatic is free and open-source, licensed under GNU GPL-3.0. This will remain free and open-source forever.
     </li>
     <li>
-    <p><em>Simple</em>. Making things simple for you is our goal. Be it via graphical installation, OS compatibility, dedicated quickstart, or in-depth documentation: We just want to make your Bestatic journey easy and enjoyable for the beginning! For detailed documentation please visit our website at bestaticpy.com. </p>
+    <em>Simple</em>. Making things simple for you is our goal. Be it via graphical installation, OS compatibility, dedicated quickstart, or in-depth documentation: We just want to make your Bestatic journey easy and enjoyable for the beginning! For detailed documentation please visit our website at bestaticpy.com.
     </li>
     </ul>
   </description>
@@ -45,11 +45,13 @@
   <releases>
     <release version="0.0.30" date="2024-12-27">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.30</url>
+      <description>
         <p>
         <em>New Features:</em>
+        </p>
         <ul>
-        <li><em>Multiple column layouts</em> are now available for all page content. To use it, Inside a markdown header, use splitsection class to split the content into different sections. Bestatic will pass these sections separately (along with your corresponding headings and section index numbers) to your templates. You can then utilize all Jinja2 logic systems to customize your content into dynamic multiple columns (using Bootstrap CSS or something similar). We will soon update Bestatic themes to take advantage of this feature.</li>
-        <li>Users can now define their own <em>Shortcodes</em> (i.e., <em>macros</em>  that can convert simple snippets in contents into per-defined HTML markup) for markdown processing by writing custom Python functions and including them in _shortcodes directory.</li>
+        <li><em>Multiple column layouts</em> are now available for all page content. To use it, Inside a markdown header, use splitsection class to split the content into different sections. Bestatic will pass these sections separately (along with your corresponding headings and section index numbers) to your templates. You can then utilize all Jinja2 logic systems to customize your content into dynamic multiple columns (using Bootstrap CSS or something similar). We will soon update Bestatic themes to take advantage of this feature. </li>
+        <li>Users can now define their own Shortcodes (i.e., macros  that can convert simple snippets in contents into per-defined HTML markup) for markdown processing by writing custom Python functions and including them in _shortcodes directory.</li>
         <li>In addition to per-existing "tags", users can now define <em>custom taxonomies</em> (for e.g., categories, authors, movies, etc.), generate list page for each of those, and process additional data for each of these taxonomies from .yaml files in _includes/yamls directory. As a result, multiple authors can now have custom pages with their biography and list of authored articles.</li>
         <li>The main config.yaml has been renamed as bestatic.yaml. Old config.yaml would still work for now, but it will eventually be depreciated.</li>
         <li>Slugs now will be generated automatically as per the filename (of course, user is free to customize it, as usual) when bestatic newpage or bestatic newpost would be used.</li>
@@ -65,7 +67,7 @@
         <li>The <em>fuse-search</em> tool has been rewritten to include user-defined search-index file link.</li>
         <li>Page type contents now can have access to all the Post type content data. This can be enabled in bestatic.yaml file.</li>
         </ul>
-        </p>
+        
         <p>
         <em>Bug fixes:</em>
         <ul>
