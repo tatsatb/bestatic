@@ -11,9 +11,31 @@
   <url type="homepage">https://www.bestaticpy.com/</url>
   
   <description>
-    <p>
-      Bestatic is a static-site generator, written in Python and Jinja2 templating engine. It is minimal, yet fully-featured.  And it can be installed graphically, without worrying about dependencies and package managers.  Like every other static-site generator, it can generate a complete website by processing a bunch of markdown files.  As a result, it eliminates the need for server-side programming or databases. The site Bestatic generates in can be served from any web server or host.
-    </p>
+    <p>Bestatic is a simple but powerful static-site generator that you can install graphically without worrying about dependencies. It can simply turn your text files into fully functional websites and blogs.</p>
+
+    <p>It is really minimal yet feature-rich. Like every other static-site generator, it can generate a complete website by processing a bunch of markdown files. As a result, it eliminates the need for server-side programming, databases, and constant security updates. The site that <em>Bestatic</em> generates can be served from any web server or host (or even from Git-based platforms, for completely free).</p>
+
+    <p>Some salient features of <em>Bestatic</em> that are probably worth highlighting:</p>
+    <ul>
+    <li>
+    <p><em>Blog-aware</em>. You can easily create your blog/news page along with your website. Customizable list pages for blog posts, reverse chronological order of posts, tags, comments (using Giscus or Disqus), fully customizable URL structures, RSS feeds - All standard good stuff are already included.</p>
+    </li>
+    <li>
+    <p><em>Feature-rich</em>. Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? Configurable navigation? Custom taxonomies (categories, multiple authors, etc.)? We have all these things built-in. Oh yes, unlike many other static-site generators, our multi-column content layout work out of the box.</p>
+    </li>
+    <li>
+    <p><em>Flexible and extensible</em>. Want to configure things in your way? Use simple yaml files. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. Want to use different markdown plugins or maybe your own custom shortcode? All of these things can de done pretty easily, without any prior knowledge.</p>
+    </li>
+    <li>
+    <p><em>Scalable</em>. Bestatic ultimately builds a bunch of static files. So, no need for database management, server maintenance, or constant security updates. A hassle-free way to manage large-scale websites.</p>
+    </li>
+    <li>
+    <p><em>Free and open-source</em>. Of course, Bestatic is free and open-source, licensed under GNU GPL-3.0. This will remain free and open-source forever.</p>
+    </li>
+    <li>
+    <p><em>Simple</em>. Making things simple for you is our goal. Be it via graphical installation, OS compatibility, dedicated quickstart, or in-depth documentation: We just want to make your Bestatic journey easy and enjoyable for the beginning! For detailed documentation please visit our website at bestaticpy.com. </p>
+    </li>
+    </ul>
   </description>
 
   <developer id="in.tatsatbanerjee">
