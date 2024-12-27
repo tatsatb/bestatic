@@ -70,6 +70,7 @@
         
         <p>
         <em>Bug fixes:</em>
+        </p>
         <ul>
         <li>The newline attribute has been removed from the sitemap.xml files.</li>
         <li>Tags field can now be empty (if the user chooses to not use any tag).</li>
@@ -78,7 +79,6 @@
         <li>Post summaries on list page will no longer have unprocessed HTML tags.</li>
         <li>Project Sites on GitHub and GitLab can now be better deployed using -p or --projectsite flag.</li>
         </ul>
-        </p>
         <p>Documentation and themes will be updated accordingly soon.</p>
         <p>Release 0.0.30 is essentially same as 0.0.29; previously an outdated file got included. So, we are updating the version to v0.0.30.</p>       
       </description>
