@@ -21,6 +21,43 @@
   </developer>
 
   <releases>
+    <release version="0.0.30" date="2024-12-27">
+      <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.30</url>
+        <h2>New Features:</h2>
+        <ul>
+        <li><strong>Multiple column layouts</strong> are now available for all page content. To use it, Inside a markdown header, use <kbd>splitsection</kbd> class to split the content into different sections. Bestatic will pass these sections separately (along with your corresponding headings and section index numbers) to your templates. You can then utilize all Jinja2 logic systems to customize your content into dynamic multiple columns (using Bootstrap CSS or something similar).  We will soon update <a href="https://www.bestaticpy.com/themes/" rel="nofollow">Bestatic themes</a> to take advantage of this feature.</li>
+        <li>Users can now define their own <strong>Shortcodes</strong> (i.e., <em>macros</em>  that can convert simple snippets in contents into per-defined HTML markup) for markdown processing by writing custom Python functions and including them in <kbd>_shortcodes</kbd> directory.</li>
+        <li>In addition to per-existing "tags", users can now define <strong>custom taxonomies</strong> (for e.g., categories, authors, movies, etc.), generate list page for each of those, and process additional data for each of these taxonomies from .yaml files in <kbd>_includes/yamls</kbd> directory. As a result, multiple authors can now have custom pages with their biography and list of authored articles.</li>
+        <li>The main <kbd>config.yaml</kbd> has been renamed as <kbd>bestatic.yaml</kbd>. Old <kbd>config.yaml</kbd> would still work for now, but it will eventually be depreciated.</li>
+        <li>Slugs now will be generated automatically as per the filename (of course, user is free to customize it, as usual) when <kbd>bestatic newpage</kbd> or <kbd>bestatic newpost</kbd> would be used.</li>
+        <li>Dates and times can now be formatted in the <kbd>bestatic.yaml</kbd> using the strftime format (see <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes" rel="nofollow">this</a> and <a href="https://strftime.org/" rel="nofollow">this</a> for reference) to display those as per users' choice. The "%B %d, %Y" format has been set as a fallback option.</li>
+        <li>Custom extensions and extension configurations now can be added via <kbd>bestatic.yaml</kbd> file. All <a href="https://python-markdown.github.io/extensions/" rel="nofollow">python-markdown extensions</a> and<br>
+        <a href="https://facelessuser.github.io/pymdown-extensions/" rel="nofollow">Pymdown extensions</a> can be used now, along with their individual configurations.</li>
+        <li>The character length of post summary can now be defined in  <kbd>bestatic.yaml</kbd> file.</li>
+        <li>Single posts can be used as homepage.</li>
+        <li><strong>Navigation</strong> can now be simply defined in <kbd>bestatic.yaml</kbd> file. It can be as nested as required. With proper themes, users will no longer need to manually edit templates to define the navigation links.</li>
+        <li>For post items, URL parameter can now be completely user defined (e.g., "blog", "news", "articles", etc.), configurable via <kbd>bestatic.yaml</kbd> file. "Posts" will now be the fallback option.</li>
+        <li>In addition to previous slug and next slug, each post has access to previous and next titles of the posts.</li>
+        <li>Included <a href="https://github.com/cmacmackin/markdown-include">markdown-include</a> extension in the Bestatic package so that one markdown file can add content from another markdown file.</li>
+        <li>The <strong>fuse-search</strong> tool has been rewritten to include user-defined search-index file link.</li>
+        <li>Page type contents now can have access to all the Post type content data. This can be enabled in <kbd>bestatic.yaml</kbd> file.</li>
+        </ul>
+        <h2>Bug fixes:</h2>
+        <ul>
+        <li>The newline attribute has been removed from the sitemap.xml files.</li>
+        <li>Tags field can now be empty (if the user chooses to not use any tag).</li>
+        <li>Faulty caching in Bestatic development server has been fixed (which often created issues with Chromium-based browsers).</li>
+        <li>Time zone can now be set in <kbd>bestatic.yaml</kbd> file. The UTC has been set as a fallback option.</li>
+        <li>Post summaries on list page will no longer have unprocessed HTML tags.</li>
+        <li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#types-of-github-pages-sites">Project Sites</a> on GitHub and GitLab can now be better deployed using -p or --projectsite flag.</li>
+        </ul>
+        <p>Documentation and themes will be updated accordingly soon.</p>
+        <p>As usual, Bestatic can be downloaded and installed from the <a href="https://github.com/tatsatb/bestatic/releases/latest">GitHub release page</a>, or <a href="https://snapcraft.io/bestatic" rel="nofollow">Snap store</a>, or <a href="https://flathub.org/apps/com.bestaticpy.bestatic" rel="nofollow">Flathub</a>, or <a href="https://pypi.org/project/Bestatic/" rel="nofollow">PyPI</a>.</p>
+        <p>Detailed installation instructions, quickstart guide, and user manual are available on our <a href="https://www.bestaticpy.com/docs/" rel="nofollow">official documentation</a>.</p>
+        <hr>
+        <p>Release 0.0.30 is essentially same as 0.0.29; previously an outdated file got included. So, we are updating the version to v0.0.30.</p>       
+      </description>
+    </release>
     <release version="0.0.28" date="2024-08-23">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.28</url>
       <description>
