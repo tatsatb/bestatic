@@ -1,0 +1,68 @@
+siteURL: "https://example.org"  # Replace with the URL of your site; Please do not add a trailing slash
+title: "Bestatic | The Best Static Site Generator!"
+description: "A simple but powerful static-site generator that transforms markdown texts to webpages and blog"
+theme: Amazing
+number_of_pages: 2  # Enter the number of blog pages to paginate blog posts
+summary_length: 250 # Enter the character length of the summary you want to display on the homepage, defaults to 250 if not specified
+comments:
+  enabled: true
+  system: giscus # Enter "disqus" or "giscus" here.
+  comment_system_id: "tatsatb/giscus-test"
+rss_feed: true
+time_format: "%B %d %Y" # Enter the time format you want to display on your site; use the format of strftime (https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes and https://strftime.org/ for reference)
+timezone: "America/New_York"  # Add timezone configuration, defaults to UTC if not specified
+markdown: # Add this section for markdown configuration, if you want to use additional markdown or pymdownx extensions
+  markdown_replace: false
+  extensions: 
+    - md_in_html
+    - toc
+    - markdown_include.include
+  extension_configs:
+    # codehilite:
+    #   linenos: table
+    markdown_include.include:
+      base_path: ./_includes
+    toc:
+      # permalink: true
+      marker: "[My Table of Contents]"
+    kbdextension:
+      brackets_css: brackets_kbd_css
+
+# Add this new section for taxonomies
+taxonomies:
+  tags:
+    taxonomy_template: taglist.html.jinja2
+    taxonomy_directory: tags
+  categories:  # Example of additional taxonomy
+    taxonomy_template: category.html.jinja2
+    taxonomy_directory: categories
+  authors:     # Example of additional taxonomy
+    taxonomy_template: author.html.jinja2
+    taxonomy_directory: authors
+
+# Add this new section for shortcodes
+SHORTCODES: true
+
+homepage_type: default # Enter "default" or "list"
+post_directory: 
+  singular: blog    # URL prefix for individual posts
+  plural: blog    # URL path for post listings
+include_post_in_pages: true  # Add this line to enable posts data inside page templates
+
+nav:
+  - Home: /
+  - User Guide:
+      - Writing your docs: /writing-your-docs
+      - Styling your docs: /styles/styling-your-docs
+      - Customizing your docs: /customizing-your-docs
+      - Blog:
+          - Blogging with Bestatic: /blogging-with-bestatic
+          - Advanced:
+              - Blogging with Markdown: /blogging-with-markdown
+              - Custom Styling: /custom-styling
+              - Templates: /templates
+  - About:
+      - License: /legal/license
+      - Release Notes: /release-notes
+
+enable_inject_tag: true
