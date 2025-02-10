@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Bestatic"
-#define MyAppVersion "0.0.25"
+#define MyAppVersion "0.0.30"
 #define MyAppPublisher "Tatsat Banerjee"
 #define MyAppURL "https://www.bestaticpy.com"
 #define MyAppExeName "bestatic.exe"
@@ -32,12 +32,12 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\Tatsat Banerjee\Desktop\LICENSE.txt
+LicenseFile=C:\Python_Data\ssg_custom\Bestatic-new\New folder_new\Bestatic-0.0.11-new\Bestatic-0.0.11-new-pyinstaller\bestatic\New folder\LICENSE.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=C:\Python_Data\ssg_custom\Bestatic-new\New folder_new\Bestatic-0.0.11-new\Bestatic-0.0.11-new-pyinstaller\bestatic\New folder
-OutputBaseFilename=bestatic_setup
+OutputBaseFilename=bestatic_setup_v0.0.30
 SetupIconFile=C:\Users\Tatsat Banerjee\Downloads\favicon_package\favicon.ico
 Compression=lzma
 SolidCompression=yes
