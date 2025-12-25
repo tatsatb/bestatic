@@ -43,8 +43,8 @@ jobs:
           pip install pyinstaller
       
       - name: Build with PyInstaller
-        working-directory: bestatic/bestatic
         run: |
+          cd bestatic/bestatic
           pyinstaller `
             --collect-all bestatic `
             --recursive-copy-metadata Bestatic `
@@ -79,7 +79,7 @@ jobs:
             --collect-all setuptools `
             --recursive-copy-metadata setuptools `
             --onedir `
-            --icon ../windows_exe/icon.ico `
+            --icon windows_exe/icon.ico `
             --console `
             --noconfirm `
             --name bestatic `
