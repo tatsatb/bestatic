@@ -24,8 +24,18 @@ on:
 jobs:
   build-windows-installer:
     runs-on: windows-latest
+    permissions:
+      contents: write
     
     steps:
+      - name: Prepare version
+        id: version
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}" -replace '^v', ''
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+          echo "Cleaned version: $version"
+      
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -97,8 +107,7 @@ jobs:
       
       - name: Prepare Inno Setup script
         run: |
-          # Strip 'v' prefix if present for version numbers
-          $version = "${{ github.event.inputs.version }}" -replace '^v', ''
+          $version = "${{ steps.version.outputs.VERSION }}"
           $scriptPath = "windows_exe/setupnew_ci.iss"
           
           # Create a CI-specific Inno Setup script with dynamic paths
@@ -210,7 +219,7 @@ jobs:
       
       - name: Verify installer
         run: |
-          $version = "${{ github.event.inputs.version }}" -replace '^v', ''
+          $version = "${{ steps.version.outputs.VERSION }}"
           $installerPath = "installer_output\bestatic_setup_v$version.exe"
           
           if (Test-Path $installerPath) {
@@ -227,7 +236,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bestatic-windows-installer
-          path: installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe
+          path: installer_output/bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe
           retention-days: 5
         env:
           VERSION_NUMBER: ${{ github.event.inputs.version }}
@@ -241,13 +250,13 @@ jobs:
           draft: false
           prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
           files: |
-            installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe
+            installer_output/bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe
           body: |
-            ## Bestatic v${{ github.event.inputs.version }}
+            ## Bestatic v${{ steps.version.outputs.VERSION }}
             
             ### Windows Installer
             
-            Download `bestatic_setup_v${{ github.event.inputs.version }}.exe` below.
+            Download `bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe` below.
             
             ### Installation
             
@@ -272,7 +281,7 @@ jobs:
       - name: Generate checksums
         if: github.event.inputs.create_release == 'true'
         run: |
-          $version = "${{ github.event.inputs.version }}" -replace '^v', ''
+          $version = "${{ steps.version.outputs.VERSION }}"
           $installerPath = "installer_output\bestatic_setup_v$version.exe"
           
           $sha256 = (Get-FileHash -Path $installerPath -Algorithm SHA256).Hash
@@ -292,6 +301,6 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           files: |
-            installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe.sha256
+            installer_output/bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
