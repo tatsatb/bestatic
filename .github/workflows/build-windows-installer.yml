@@ -1,0 +1,294 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 0.0.31)'
+        required: true
+        type: string
+      create_release:
+        description: 'Create/Update GitHub Release'
+        required: true
+        type: boolean
+        default: false
+      release_type:
+        description: 'Release type'
+        required: false
+        type: choice
+        options:
+          - latest
+          - prerelease
+        default: latest
+
+jobs:
+  build-windows-installer:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git describe
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Bestatic
+          pip install pyinstaller
+      
+      - name: Build with PyInstaller
+        working-directory: bestatic/bestatic
+        run: |
+          pyinstaller `
+            --collect-all bestatic `
+            --recursive-copy-metadata Bestatic `
+            --collect-all customblocks `
+            --collect-all markdown `
+            --recursive-copy-metadata mkdocs-material `
+            --recursive-copy-metadata mkdocs `
+            --collect-all mkdocs `
+            --collect-all material `
+            --collect-all bs4 `
+            --recursive-copy-metadata beautifulsoup4 `
+            --collect-all pymdown-extensions `
+            --recursive-copy-metadata pymdown-extensions `
+            --collect-all pygments `
+            --recursive-copy-metadata pygments `
+            --recursive-copy-metadata mkdocs-material-extensions `
+            --collect-all jinja2 `
+            --recursive-copy-metadata jinja2 `
+            --collect-all watchdog `
+            --recursive-copy-metadata watchdog `
+            --collect-all pyyaml `
+            --recursive-copy-metadata pyyaml `
+            --collect-all chardet `
+            --recursive-copy-metadata chardet `
+            --collect-all markdown_include `
+            --recursive-copy-metadata markdown_include `
+            --collect-all tomli `
+            --recursive-copy-metadata tomli `
+            --collect-all tomli_w `
+            --collect-all soupsieve `
+            --recursive-copy-metadata soupsieve `
+            --collect-all setuptools `
+            --recursive-copy-metadata setuptools `
+            --onedir `
+            --icon ../windows_exe/icon.ico `
+            --console `
+            --noconfirm `
+            --name bestatic `
+            bestatic.py
+      
+      - name: Verify build
+        run: |
+          if (Test-Path "bestatic/bestatic/dist/bestatic/bestatic.exe") {
+            Write-Host "✓ Build successful: bestatic.exe found"
+            Get-ChildItem "bestatic/bestatic/dist/bestatic" -Recurse | Select-Object FullName
+          } else {
+            Write-Error "✗ Build failed: bestatic.exe not found"
+            exit 1
+          }
+      
+      - name: Prepare Inno Setup script
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          $scriptPath = "bestatic/windows_exe/setupnew_ci.iss"
+          
+          # Create a CI-specific Inno Setup script with dynamic paths
+          $script = @"
+          #define MyAppName "Bestatic"
+          #define MyAppVersion "$version"
+          #define MyAppPublisher "Tatsat Banerjee"
+          #define MyAppURL "https://www.bestaticpy.com"
+          #define MyAppExeName "bestatic.exe"
+          #define MyAppAssocName MyAppName + " File"
+          #define MyAppAssocExt ".bsp"
+          #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
+          
+          [Setup]
+          AppId={{D83C7F31-DCB0-4887-A6E2-24FCBA146722}
+          AppName={#MyAppName}
+          AppVersion={#MyAppVersion}
+          AppPublisher={#MyAppPublisher}
+          AppPublisherURL={#MyAppURL}
+          AppSupportURL={#MyAppURL}
+          AppUpdatesURL={#MyAppURL}
+          DefaultDirName={autopf}\{#MyAppName}
+          ArchitecturesAllowed=x64compatible
+          ArchitecturesInstallIn64BitMode=x64compatible
+          ChangesAssociations=yes
+          DisableProgramGroupPage=yes
+          LicenseFile=$($pwd.Path)\bestatic\LICENSE
+          PrivilegesRequiredOverridesAllowed=dialog
+          OutputDir=$($pwd.Path)\installer_output
+          OutputBaseFilename=bestatic_setup_v$version
+          SetupIconFile=$($pwd.Path)\bestatic\windows_exe\icon.ico
+          Compression=lzma
+          SolidCompression=yes
+          WizardStyle=modern
+          ChangesEnvironment=true
+          
+          [Languages]
+          Name: "english"; MessagesFile: "compiler:Default.isl"
+          
+          [Tasks]
+          Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+          Name: modifypath; Description: Add application directory to your environmental path;
+          
+          [Files]
+          Source: "$($pwd.Path)\bestatic\bestatic\dist\bestatic\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+          Source: "$($pwd.Path)\bestatic\bestatic\dist\bestatic\_internal\*"; DestDir: "{app}/_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
+          
+          [Registry]
+          Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
+          Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
+          Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
+          Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+          Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+          
+          [Icons]
+          Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+          Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+          
+          [Code]
+          const
+              ModPathName = 'modifypath';
+              ModPathType = 'user';
+          
+          function ModPathDir(): TArrayOfString;
+          begin
+              setArrayLength(Result, 1)
+              Result[0] := ExpandConstant('{app}');
+          end;
+          #include "$($pwd.Path)\bestatic\windows_exe\modpath.iss"
+          
+          [Run]
+          Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+          "@
+          
+          New-Item -ItemType Directory -Force -Path "installer_output" | Out-Null
+          Set-Content -Path $scriptPath -Value $script -Encoding UTF8
+          Write-Host "✓ Inno Setup script created at: $scriptPath"
+      
+      - name: Install Inno Setup via Chocolatey
+        run: |
+          Write-Host "Installing Inno Setup via Chocolatey..."
+          choco install innosetup -y
+          
+          # Refresh environment variables
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+          
+          # Verify installation
+          $isccPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $isccPath)) {
+            Write-Error "Inno Setup Compiler not found at: $isccPath"
+            exit 1
+          }
+          
+          Write-Host "✓ Inno Setup installed at: $isccPath"
+      
+      - name: Build installer with Inno Setup
+        run: |
+          Write-Host "Building installer..."
+          
+          # Compile the installer
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "bestatic\windows_exe\setupnew_ci.iss"
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Installer build failed with exit code: $LASTEXITCODE"
+            exit 1
+          }
+          
+          Write-Host "✓ Installer built successfully"
+      
+      - name: Verify installer
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          $installerPath = "installer_output\bestatic_setup_v$version.exe"
+          
+          if (Test-Path $installerPath) {
+            $fileSize = (Get-Item $installerPath).Length / 1MB
+            Write-Host "✓ Installer created: $installerPath"
+            Write-Host "  Size: $([math]::Round($fileSize, 2)) MB"
+          } else {
+            Write-Error "✗ Installer not found at: $installerPath"
+            Get-ChildItem "installer_output" -ErrorAction SilentlyContinue
+            exit 1
+          }
+      
+      - name: Upload installer as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bestatic-windows-installer
+          path: installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe
+          retention-days: 5
+      
+      - name: Create or Update Release
+        if: github.event.inputs.create_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          name: Bestatic v${{ github.event.inputs.version }}
+          draft: false
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
+          files: |
+            installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe
+          body: |
+            ## Bestatic v${{ github.event.inputs.version }}
+            
+            ### Windows Installer
+            
+            Download `bestatic_setup_v${{ github.event.inputs.version }}.exe` below.
+            
+            ### Installation
+            
+            1. Download the installer
+            2. Run the installer
+            3. Follow the installation wizard
+            4. Optionally add Bestatic to your PATH during installation
+            
+            ### What's New
+            
+            <!-- Add release notes here -->
+            
+            ---
+            
+            Built with ❤️ using GitHub Actions
+            
+            **SHA256 Checksums:**
+            <!-- Checksums will be added automatically -->
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generate checksums
+        if: github.event.inputs.create_release == 'true'
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          $installerPath = "installer_output\bestatic_setup_v$version.exe"
+          
+          $sha256 = (Get-FileHash -Path $installerPath -Algorithm SHA256).Hash
+          
+          Write-Host "SHA256 Checksum:"
+          Write-Host "  $sha256"
+          
+          # Save to file
+          $checksumFile = "installer_output\bestatic_setup_v$version.exe.sha256"
+          "$sha256  bestatic_setup_v$version.exe" | Out-File -FilePath $checksumFile -Encoding ASCII
+          
+          Write-Host "✓ Checksum saved to: $checksumFile"
+      
+      - name: Upload checksum
+        if: github.event.inputs.create_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          files: |
+            installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
