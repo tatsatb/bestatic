@@ -44,7 +44,7 @@ jobs:
       
       - name: Build with PyInstaller
         run: |
-          cd bestatic/bestatic
+          cd bestatic
           pyinstaller `
             --collect-all bestatic `
             --recursive-copy-metadata Bestatic `
@@ -79,7 +79,7 @@ jobs:
             --collect-all setuptools `
             --recursive-copy-metadata setuptools `
             --onedir `
-            --icon windows_exe/icon.ico `
+            --icon ../windows_exe/icon.ico `
             --console `
             --noconfirm `
             --name bestatic `
@@ -87,9 +87,9 @@ jobs:
       
       - name: Verify build
         run: |
-          if (Test-Path "bestatic/bestatic/dist/bestatic/bestatic.exe") {
+          if (Test-Path "bestatic/dist/bestatic/bestatic.exe") {
             Write-Host "✓ Build successful: bestatic.exe found"
-            Get-ChildItem "bestatic/bestatic/dist/bestatic" -Recurse | Select-Object FullName
+            Get-ChildItem "bestatic/dist/bestatic" -Recurse | Select-Object FullName
           } else {
             Write-Error "✗ Build failed: bestatic.exe not found"
             exit 1
@@ -143,8 +143,8 @@ jobs:
           Name: modifypath; Description: Add application directory to your environmental path;
           
           [Files]
-          Source: "$($pwd.Path)\bestatic\bestatic\dist\bestatic\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-          Source: "$($pwd.Path)\bestatic\bestatic\dist\bestatic\_internal\*"; DestDir: "{app}/_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
+          Source: "$($pwd.Path)\bestatic\dist\bestatic\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+          Source: "$($pwd.Path)\bestatic\dist\bestatic\_internal\*"; DestDir: "{app}/_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
           
           [Registry]
           Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
