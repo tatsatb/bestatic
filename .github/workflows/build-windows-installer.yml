@@ -99,7 +99,7 @@ jobs:
         run: |
           # Strip 'v' prefix if present for version numbers
           $version = "${{ github.event.inputs.version }}" -replace '^v', ''
-          $scriptPath = "bestatic/windows_exe/setupnew_ci.iss"
+          $scriptPath = "windows_exe/setupnew_ci.iss"
           
           # Create a CI-specific Inno Setup script with dynamic paths
           $script = @"
@@ -125,11 +125,11 @@ jobs:
           ArchitecturesInstallIn64BitMode=x64compatible
           ChangesAssociations=yes
           DisableProgramGroupPage=yes
-          LicenseFile=$($pwd.Path)\bestatic\LICENSE
+          LicenseFile=$($pwd.Path)\LICENSE
           PrivilegesRequiredOverridesAllowed=dialog
           OutputDir=$($pwd.Path)\installer_output
           OutputBaseFilename=bestatic_setup_v$version
-          SetupIconFile=$($pwd.Path)\bestatic\windows_exe\icon.ico
+          SetupIconFile=$($pwd.Path)\windows_exe\icon.ico
           Compression=lzma
           SolidCompression=yes
           WizardStyle=modern
@@ -167,7 +167,7 @@ jobs:
               setArrayLength(Result, 1)
               Result[0] := ExpandConstant('{app}');
           end;
-          #include "$($pwd.Path)\bestatic\windows_exe\modpath.iss"
+          #include "$($pwd.Path)\windows_exe\modpath.iss"
           
           [Run]
           Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
@@ -199,7 +199,7 @@ jobs:
           Write-Host "Building installer..."
           
           # Compile the installer
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "bestatic\windows_exe\setupnew_ci.iss"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "windows_exe\setupnew_ci.iss"
           
           if ($LASTEXITCODE -ne 0) {
             Write-Error "Installer build failed with exit code: $LASTEXITCODE"
