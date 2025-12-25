@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number (e.g., 0.0.31)'
+        description: 'Version tag (e.g., v0.0.31)'
         required: true
         type: string
       create_release:
@@ -97,7 +97,8 @@ jobs:
       
       - name: Prepare Inno Setup script
         run: |
-          $version = "${{ github.event.inputs.version }}"
+          # Strip 'v' prefix if present for version numbers
+          $version = "${{ github.event.inputs.version }}" -replace '^v', ''
           $scriptPath = "bestatic/windows_exe/setupnew_ci.iss"
           
           # Create a CI-specific Inno Setup script with dynamic paths
@@ -209,7 +210,7 @@ jobs:
       
       - name: Verify installer
         run: |
-          $version = "${{ github.event.inputs.version }}"
+          $version = "${{ github.event.inputs.version }}" -replace '^v', ''
           $installerPath = "installer_output\bestatic_setup_v$version.exe"
           
           if (Test-Path $installerPath) {
@@ -228,13 +229,15 @@ jobs:
           name: bestatic-windows-installer
           path: installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe
           retention-days: 5
+        env:
+          VERSION_NUMBER: ${{ github.event.inputs.version }}
       
       - name: Create or Update Release
         if: github.event.inputs.create_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.event.inputs.version }}
-          name: Bestatic v${{ github.event.inputs.version }}
+          tag_name: ${{ github.event.inputs.version }}
+          name: Bestatic ${{ github.event.inputs.version }}
           draft: false
           prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
           files: |
@@ -269,7 +272,7 @@ jobs:
       - name: Generate checksums
         if: github.event.inputs.create_release == 'true'
         run: |
-          $version = "${{ github.event.inputs.version }}"
+          $version = "${{ github.event.inputs.version }}" -replace '^v', ''
           $installerPath = "installer_output\bestatic_setup_v$version.exe"
           
           $sha256 = (Get-FileHash -Path $installerPath -Algorithm SHA256).Hash
@@ -287,7 +290,7 @@ jobs:
         if: github.event.inputs.create_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.event.inputs.version }}
+          tag_name: ${{ github.event.inputs.version }}
           files: |
             installer_output/bestatic_setup_v${{ github.event.inputs.version }}.exe.sha256
         env:
