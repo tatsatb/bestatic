@@ -127,12 +127,25 @@ jobs:
           # Copy application bundle
           cp -R bestatic/dist/bestatic/* pkg_root/Applications/Bestatic/
           
+          # Add custom folder icon if icon.icns exists
+          if [ -f "windows_exe/icon.icns" ]; then
+            cp windows_exe/icon.icns pkg_root/Applications/Bestatic/.VolumeIcon.icns
+            # The postinstall script will set the custom icon attribute
+          fi
+          
           # Create postinstall script to add to PATH
           cat > pkg_scripts/postinstall << 'EOF'
           #!/bin/bash
           # Create symlink in /usr/local/bin for PATH access
           ln -sf /Applications/Bestatic/bestatic /usr/local/bin/bestatic
           chmod +x /Applications/Bestatic/bestatic
+          
+          # Set custom folder icon if .VolumeIcon.icns exists
+          if [ -f "/Applications/Bestatic/.VolumeIcon.icns" ]; then
+            # Set the custom icon bit
+            /usr/bin/SetFile -a C /Applications/Bestatic 2>/dev/null || true
+          fi
+          
           echo "Bestatic installed successfully!"
           echo "You can now run 'bestatic' from anywhere in the terminal."
           exit 0
