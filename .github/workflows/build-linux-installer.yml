@@ -127,174 +127,156 @@ jobs:
           cp -R bestatic/dist/bestatic/* "$PKG_DIR/"
           
           # Create install.sh script
-          cat > "$PKG_DIR/install.sh" << 'INSTALL_SCRIPT'
-#!/bin/bash
-set -e
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-echo -e "${GREEN}Bestatic Linux Installer${NC}"
-echo "================================"
-echo ""
-
-# Get the directory where the script is located
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-INSTALL_DIR="/opt/bestatic"
-BIN_LINK="/usr/local/bin/bestatic"
-
-# Check if running as root
-if [ "$EUID" -ne 0 ]; then 
-    echo -e "${YELLOW}This script requires root privileges.${NC}"
-    echo "Please run with sudo: sudo ./install.sh"
-    exit 1
-fi
-
-echo "Installing Bestatic..."
-
-# Create installation directory
-echo "→ Creating installation directory: $INSTALL_DIR"
-mkdir -p "$INSTALL_DIR"
-
-# Copy files
-echo "→ Copying files..."
-cp -R "$SCRIPT_DIR"/* "$INSTALL_DIR/"
-chmod +x "$INSTALL_DIR/bestatic"
-
-# Create symlink
-echo "→ Creating symlink in /usr/local/bin..."
-ln -sf "$INSTALL_DIR/bestatic" "$BIN_LINK"
-
-echo ""
-echo -e "${GREEN}✓ Installation complete!${NC}"
-echo ""
-echo "Bestatic has been installed to: $INSTALL_DIR"
-echo "You can now run 'bestatic' from anywhere in the terminal."
-echo ""
-echo "To uninstall, run: sudo $INSTALL_DIR/uninstall.sh"
-echo ""
-INSTALL_SCRIPT
+          cat > "$PKG_DIR/install.sh" << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          # Colors for output
+          RED='\033[0;31m'
+          GREEN='\033[0;32m'
+          YELLOW='\033[1;33m'
+          NC='\033[0m' # No Color
+          
+          echo -e "${GREEN}Bestatic Linux Installer${NC}"
+          echo "================================"
+          echo ""
+          
+          # Get the directory where the script is located
+          SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+          INSTALL_DIR="/opt/bestatic"
+          BIN_LINK="/usr/local/bin/bestatic"
+          
+          # Check if running as root
+          if [ "$EUID" -ne 0 ]; then 
+              echo -e "${YELLOW}This script requires root privileges.${NC}"
+              echo "Please run with sudo: sudo ./install.sh"
+              exit 1
+          fi
+          
+          echo "Installing Bestatic..."
+          
+          # Create installation directory
+          echo "→ Creating installation directory: $INSTALL_DIR"
+          mkdir -p "$INSTALL_DIR"
+          
+          # Copy files
+          echo "→ Copying files..."
+          cp -R "$SCRIPT_DIR"/* "$INSTALL_DIR/"
+          chmod +x "$INSTALL_DIR/bestatic"
+          
+          # Create symlink
+          echo "→ Creating symlink in /usr/local/bin..."
+          ln -sf "$INSTALL_DIR/bestatic" "$BIN_LINK"
+          
+          echo ""
+          echo -e "${GREEN}✓ Installation complete!${NC}"
+          echo ""
+          echo "Bestatic has been installed to: $INSTALL_DIR"
+          echo "You can now run 'bestatic' from anywhere in the terminal."
+          echo ""
+          echo "To uninstall, run: sudo $INSTALL_DIR/uninstall.sh"
+          echo ""
+          EOF
           
           chmod +x "$PKG_DIR/install.sh"
           
           # Create uninstall.sh script
-          cat > "$PKG_DIR/uninstall.sh" << 'UNINSTALL_SCRIPT'
-#!/bin/bash
-set -e
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-echo -e "${YELLOW}Bestatic Linux Uninstaller${NC}"
-echo "================================"
-echo ""
-
-INSTALL_DIR="/opt/bestatic"
-BIN_LINK="/usr/local/bin/bestatic"
-
-# Check if running as root
-if [ "$EUID" -ne 0 ]; then 
-    echo -e "${RED}This script requires root privileges.${NC}"
-    echo "Please run with sudo: sudo ./uninstall.sh"
-    exit 1
-fi
-
-echo "Uninstalling Bestatic..."
-
-# Remove symlink
-if [ -L "$BIN_LINK" ]; then
-    echo "→ Removing symlink: $BIN_LINK"
-    rm "$BIN_LINK"
-fi
-
-# Remove installation directory
-if [ -d "$INSTALL_DIR" ]; then
-    echo "→ Removing installation directory: $INSTALL_DIR"
-    rm -rf "$INSTALL_DIR"
-fi
-
-echo ""
-echo -e "${GREEN}✓ Uninstallation complete!${NC}"
-echo ""
-echo "Bestatic has been removed from your system."
-echo ""
-UNINSTALL_SCRIPT
+          cat > "$PKG_DIR/uninstall.sh" << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          # Colors for output
+          RED='\033[0;31m'
+          GREEN='\033[0;32m'
+          YELLOW='\033[1;33m'
+          NC='\033[0m' # No Color
+          
+          echo -e "${YELLOW}Bestatic Linux Uninstaller${NC}"
+          echo "================================"
+          echo ""
+          
+          INSTALL_DIR="/opt/bestatic"
+          BIN_LINK="/usr/local/bin/bestatic"
+          
+          # Check if running as root
+          if [ "$EUID" -ne 0 ]; then 
+              echo -e "${RED}This script requires root privileges.${NC}"
+              echo "Please run with sudo: sudo ./uninstall.sh"
+              exit 1
+          fi
+          
+          echo "Uninstalling Bestatic..."
+          
+          # Remove symlink
+          if [ -L "$BIN_LINK" ]; then
+              echo "→ Removing symlink: $BIN_LINK"
+              rm "$BIN_LINK"
+          fi
+          
+          # Remove installation directory
+          if [ -d "$INSTALL_DIR" ]; then
+              echo "→ Removing installation directory: $INSTALL_DIR"
+              rm -rf "$INSTALL_DIR"
+          fi
+          
+          echo ""
+          echo -e "${GREEN}✓ Uninstallation complete!${NC}"
+          echo ""
+          echo "Bestatic has been removed from your system."
+          echo ""
+          EOF
           
           chmod +x "$PKG_DIR/uninstall.sh"
           
-          # Create README
-          cat > "$PKG_DIR/README.txt" << EOF
-Bestatic v${VERSION_NUMBER} - Linux Distribution
-================================================
-
-INSTALLATION INSTRUCTIONS
--------------------------
-
-1. Extract this archive:
-   tar -xzf bestatic-${VERSION_NUMBER}-linux-${{ matrix.arch }}.tar.gz
-
-2. Navigate to the extracted directory:
-   cd bestatic-${VERSION_NUMBER}-linux-${{ matrix.arch }}
-
-3. Run the installation script with root privileges:
-   sudo ./install.sh
-
-   This will:
-   - Install Bestatic to /opt/bestatic
-   - Create a symlink in /usr/local/bin/bestatic
-   - Add bestatic to your PATH automatically
-
-4. Verify the installation:
-   bestatic --help
-
-UNINSTALLATION
---------------
-
-To remove Bestatic from your system:
-   sudo /opt/bestatic/uninstall.sh
-
-Or if you still have the extracted directory:
-   sudo ./uninstall.sh
-
-MANUAL INSTALLATION (Alternative)
-----------------------------------
-
-If you prefer not to use the install script:
-
-1. Copy the bestatic directory to your preferred location
-2. Add the directory to your PATH, or create a symlink:
-   sudo ln -s /path/to/bestatic/bestatic /usr/local/bin/bestatic
-
-SYSTEM REQUIREMENTS
--------------------
-
-- Linux distribution with glibc 2.31 or newer
-- Architecture: ${{ matrix.arch }}
-
-USAGE
------
-
-After installation, run:
-   bestatic --help
-
-For documentation, visit: https://www.bestaticpy.com
-
-SUPPORT
--------
-
-Report issues at: https://github.com/tatbansare/bestatic/issues
-
-LICENSE
--------
-
-See the LICENSE file for license information.
-EOF
+          # Create README - using simple text without YAML-problematic formatting
+          cat > "$PKG_DIR/README.txt" << 'EOF'
+          Bestatic - Linux Distribution
+          ================================================
+          
+          INSTALLATION INSTRUCTIONS
+          
+          1. Extract this archive
+          2. Navigate to the extracted directory
+          3. Run the installation script with root privileges:
+             sudo ./install.sh
+          
+          This will:
+          - Install Bestatic to /opt/bestatic
+          - Create a symlink in /usr/local/bin/bestatic
+          - Add bestatic to your PATH automatically
+          
+          4. Verify the installation:
+             bestatic --help
+          
+          UNINSTALLATION
+          
+          To remove Bestatic from your system:
+             sudo /opt/bestatic/uninstall.sh
+          
+          Or if you still have the extracted directory:
+             sudo ./uninstall.sh
+          
+          MANUAL INSTALLATION (Alternative)
+          
+          If you prefer not to use the install script:
+          1. Copy the bestatic directory to your preferred location
+          2. Add the directory to your PATH, or create a symlink
+          
+          USAGE
+          
+          After installation, run:
+             bestatic --help
+          
+          For documentation, visit: https://www.bestaticpy.com
+          
+          SUPPORT
+          
+          Report issues at: https://github.com/tatbansare/bestatic/issues
+          
+          LICENSE
+          
+          See the LICENSE file for license information.
+          EOF
           
           # Copy LICENSE
           cp LICENSE "$PKG_DIR/"
