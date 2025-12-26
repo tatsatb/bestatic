@@ -165,6 +165,7 @@ jobs:
               <organization>com.bestaticpy</organization>
               <domains enable_localSystem="true"/>
               <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
+              <background file="icon.icns" alignment="bottomleft" scaling="none"/>
               <welcome file="welcome.html" mime-type="text/html"/>
               <license file="license.txt" mime-type="text/plain"/>
               <pkg-ref id="com.bestaticpy.bestatic"/>
@@ -203,6 +204,12 @@ jobs:
           
           # Copy LICENSE file
           cp LICENSE installer_output/license.txt
+          
+          # Copy icon if it exists
+          if [ -f "windows_exe/icon.icns" ]; then
+            cp windows_exe/icon.icns installer_output/icon.icns
+            echo "✓ Icon copied"
+          fi
           
           # Build the final product
           productbuild \
