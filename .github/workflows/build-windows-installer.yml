@@ -246,35 +246,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.version }}
-          name: Bestatic ${{ github.event.inputs.version }}
           draft: false
           prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
           files: |
             installer_output/bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe
-          body: |
-            ## Bestatic v${{ steps.version.outputs.VERSION }}
-            
-            ### Windows Installer
-            
-            Download `bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe` below.
-            
-            ### Installation
-            
-            1. Download the installer
-            2. Run the installer
-            3. Follow the installation wizard
-            4. Optionally add Bestatic to your PATH during installation
-            
-            ### What's New
-            
-            <!-- Add release notes here -->
-            
-            ---
-            
-            Built with ❤️ using GitHub Actions
-            
-            **SHA256 Checksums:**
-            <!-- Checksums will be added automatically -->
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       

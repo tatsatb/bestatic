@@ -1,0 +1,275 @@
+name: Build macOS Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v0.0.31)'
+        required: true
+        type: string
+      create_release:
+        description: 'Create/Update GitHub Release'
+        required: true
+        type: boolean
+        default: false
+      release_type:
+        description: 'Release type'
+        required: false
+        type: choice
+        options:
+          - latest
+          - prerelease
+        default: latest
+
+jobs:
+  build-macos-installer:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            arch: arm64
+          - os: macos-13
+            arch: x86_64
+    
+    steps:
+      - name: Prepare version
+        id: version
+        shell: bash
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          VERSION_NUMBER="${VERSION#v}"
+          echo "VERSION=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+          echo "Cleaned version: $VERSION_NUMBER"
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git describe
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Bestatic
+          pip install pyinstaller
+      
+      - name: Build with PyInstaller
+        run: |
+          cd bestatic
+          pyinstaller \
+            --collect-all bestatic \
+            --recursive-copy-metadata Bestatic \
+            --collect-all customblocks \
+            --collect-all markdown \
+            --recursive-copy-metadata mkdocs-material \
+            --recursive-copy-metadata mkdocs \
+            --collect-all mkdocs \
+            --collect-all material \
+            --collect-all bs4 \
+            --recursive-copy-metadata beautifulsoup4 \
+            --collect-all pymdown-extensions \
+            --recursive-copy-metadata pymdown-extensions \
+            --collect-all pygments \
+            --recursive-copy-metadata pygments \
+            --recursive-copy-metadata mkdocs-material-extensions \
+            --collect-all jinja2 \
+            --recursive-copy-metadata jinja2 \
+            --collect-all watchdog \
+            --recursive-copy-metadata watchdog \
+            --collect-all pyyaml \
+            --recursive-copy-metadata pyyaml \
+            --collect-all chardet \
+            --recursive-copy-metadata chardet \
+            --collect-all markdown_include \
+            --recursive-copy-metadata markdown_include \
+            --collect-all tomli \
+            --recursive-copy-metadata tomli \
+            --collect-all tomli_w \
+            --collect-all soupsieve \
+            --recursive-copy-metadata soupsieve \
+            --collect-all setuptools \
+            --recursive-copy-metadata setuptools \
+            --onedir \
+            --console \
+            --noconfirm \
+            --name bestatic \
+            bestatic.py
+      
+      - name: Verify build
+        run: |
+          if [ -f "bestatic/dist/bestatic/bestatic" ]; then
+            echo "✓ Build successful: bestatic executable found"
+            ls -lh bestatic/dist/bestatic/
+          else
+            echo "✗ Build failed: bestatic executable not found"
+            exit 1
+          fi
+      
+      - name: Prepare package structure
+        run: |
+          VERSION_NUMBER="${{ steps.version.outputs.VERSION }}"
+          
+          echo "Creating package structure..."
+          
+          # Create directories
+          mkdir -p pkg_root/Applications/Bestatic
+          mkdir -p pkg_root/usr/local/bin
+          mkdir -p pkg_scripts
+          mkdir -p installer_output
+          
+          # Copy application bundle
+          cp -R bestatic/dist/bestatic/* pkg_root/Applications/Bestatic/
+          
+          # Create postinstall script to add to PATH
+          cat > pkg_scripts/postinstall << 'POSTINSTALL'
+#!/bin/bash
+# Create symlink in /usr/local/bin for PATH access
+ln -sf /Applications/Bestatic/bestatic /usr/local/bin/bestatic
+chmod +x /Applications/Bestatic/bestatic
+echo "Bestatic installed successfully!"
+echo "You can now run 'bestatic' from anywhere in the terminal."
+exit 0
+POSTINSTALL
+          
+          chmod +x pkg_scripts/postinstall
+          
+          echo "✓ Package structure created"
+      
+      - name: Build PKG installer
+        run: |
+          VERSION_NUMBER="${{ steps.version.outputs.VERSION }}"
+          
+          echo "Building PKG installer..."
+          
+          # Build the component package
+          pkgbuild \
+            --root pkg_root \
+            --scripts pkg_scripts \
+            --identifier com.bestaticpy.bestatic \
+            --version "$VERSION_NUMBER" \
+            --install-location / \
+            installer_output/bestatic-component.pkg
+          
+          # Create distribution XML for customization
+          cat > installer_output/distribution.xml << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>Bestatic $VERSION_NUMBER</title>
+    <organization>com.bestaticpy</organization>
+    <domains enable_localSystem="true"/>
+    <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
+    <welcome file="welcome.html" mime-type="text/html"/>
+    <license file="license.txt" mime-type="text/plain"/>
+    <pkg-ref id="com.bestaticpy.bestatic"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.bestaticpy.bestatic"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.bestaticpy.bestatic" visible="false">
+        <pkg-ref id="com.bestaticpy.bestatic"/>
+    </choice>
+    <pkg-ref id="com.bestaticpy.bestatic" version="$VERSION_NUMBER" onConclusion="none">bestatic-component.pkg</pkg-ref>
+</installer-gui-script>
+EOF
+          
+          # Create welcome message
+          cat > installer_output/welcome.html << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Bestatic $VERSION_NUMBER</h1>
+    <p>This installer will install Bestatic on your Mac.</p>
+    <p>After installation, you can run <code>bestatic</code> from anywhere in the terminal.</p>
+    <p><strong>Installation location:</strong> /Applications/Bestatic</p>
+    <p><strong>Symlink created:</strong> /usr/local/bin/bestatic</p>
+</body>
+</html>
+EOF
+          
+          # Copy LICENSE file
+          cp LICENSE installer_output/license.txt
+          
+          # Build the final product
+          productbuild \
+            --distribution installer_output/distribution.xml \
+            --package-path installer_output \
+            --resources installer_output \
+            installer_output/bestatic_v${VERSION_NUMBER}_${{ matrix.arch }}.pkg
+          
+          echo "✓ PKG installer built successfully"
+      
+      - name: Verify installer
+        run: |
+          VERSION_NUMBER="${{ steps.version.outputs.VERSION }}"
+          INSTALLER_PATH="installer_output/bestatic_v${VERSION_NUMBER}_${{ matrix.arch }}.pkg"
+          
+          if [ -f "$INSTALLER_PATH" ]; then
+            FILE_SIZE=$(du -h "$INSTALLER_PATH" | cut -f1)
+            echo "✓ Installer created: $INSTALLER_PATH"
+            echo "  Size: $FILE_SIZE"
+          else
+            echo "✗ Installer not found at: $INSTALLER_PATH"
+            ls -la installer_output/
+            exit 1
+          fi
+      
+      - name: Upload installer as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bestatic-macos-installer-${{ matrix.arch }}
+          path: installer_output/bestatic_v*.pkg
+          retention-days: 5
+      
+      - name: Create or Update Release
+        if: github.event.inputs.create_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
+          files: |
+            installer_output/bestatic_v*.pkg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generate checksums
+        if: github.event.inputs.create_release == 'true'
+        run: |
+          VERSION_NUMBER="${{ steps.version.outputs.VERSION }}"
+          INSTALLER_PATH="installer_output/bestatic_v${VERSION_NUMBER}_${{ matrix.arch }}.pkg"
+          
+          SHA256=$(shasum -a 256 "$INSTALLER_PATH" | cut -d' ' -f1)
+          
+          echo "SHA256 Checksum:"
+          echo "  $SHA256"
+          
+          # Save to file
+          CHECKSUM_FILE="installer_output/bestatic_v${VERSION_NUMBER}_${{ matrix.arch }}.pkg.sha256"
+          echo "$SHA256  bestatic_v${VERSION_NUMBER}_${{ matrix.arch }}.pkg" > "$CHECKSUM_FILE"
+          
+          echo "✓ Checksum saved to: $CHECKSUM_FILE"
+      
+      - name: Upload checksum
+        if: github.event.inputs.create_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          files: |
+            installer_output/bestatic_v*.pkg.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
