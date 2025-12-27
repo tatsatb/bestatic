@@ -54,6 +54,13 @@ jobs:
       
       - name: Create PyInstaller spec file
         run: |
+          # --- CRITICAL FIX START ---
+          # We must remove Git and MSYS2 from the PATH to prevent the TP_NUM_C_BUFS crash
+          Write-Host "Sanitizing PATH to remove Git/MSYS conflicts..."
+          $cleanPath = ($env:Path -split ';' | Where-Object { $_ -notlike "*\Git\*" -and $_ -notlike "*\msys64\*" }) -join ';'
+          $env:Path = $cleanPath
+          # --- CRITICAL FIX END ---        
+
           cd bestatic
           
           $specContent = @'
@@ -150,6 +157,12 @@ jobs:
       
       - name: Build with PyInstaller
         run: |
+          # Apply PATH sanitization to prevent TP_NUM_C_BUFS crash
+          Write-Host "Sanitizing PATH to remove Git/MSYS conflicts..."
+          $cleanPath = ($env:Path -split ';' | Where-Object { $_ -notlike "*\Git\*" -and $_ -notlike "*\msys64\*" }) -join ';'
+          $env:Path = $cleanPath
+          Write-Host "✓ PATH sanitized"
+          
           cd bestatic
           pyinstaller bestatic.spec --noconfirm
       
