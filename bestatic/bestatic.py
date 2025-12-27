@@ -9,6 +9,7 @@ import shutil
 import multiprocessing
 import watchdog.events
 import watchdog.observers
+from contextlib import contextmanager
 
 
 # --- CRITICAL FIX START ---
