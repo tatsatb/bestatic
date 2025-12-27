@@ -1,11 +1,16 @@
 name: bestatic # you probably want to 'snapcraft register <name>'
 base: core22 # the base snap is the execution environment for this snap
-version: '0.0.30' # just for humans, typically '1.2+git' or '1.3.2'
+version: '0.0.31' # just for humans, typically '1.2+git' or '1.3.2'
 summary: A simple but really powerful static-site generator. # 79 char long summary
 description: |  
-  Detailed documentation is available on the [official website](https://www.bestaticpy.com/).  
+    ## ✅ 📚 Detailed documentation is available on the [official website](https://www.bestaticpy.com/).  
 
-    Bestatic is a simple but really powerful static-site generator that you can install graphically without worrying about dependencies. It can simply turn your text files into fully functional websites and blogs.
+    ## ✅ 🎨 Themes are available on the [themes repo](https://github.com/tatsatb/bestatic-themes).
+
+
+    Bestatic is a simple but really powerful static-site generator that you can install **graphically** without worrying about dependencies. It can simply turn your text files into fully functional websites and blogs.
+
+    **Any prior knowledge in Python is not required. Neither is any prior knowledge in dependency or environment management.**
 
     It is really minimal yet feature-rich. Like every other static-site generator,
     it can generate a complete website by processing a bunch of markdown files. As a result, it eliminates the need for server-side programming, databases, and constant security updates. The site that _Bestatic_ generates can be served from any web server or host (or even from Git-based platforms, for completely free). 
@@ -15,10 +20,10 @@ description: |
     -  **Blog-aware**. You can easily create your blog/news page along with your website. Customizable list pages for blog posts, reverse chronological order of posts, tags, comments (using Giscus or Disqus), fully customizable URL structures, RSS feeds - All standard good stuff are already included.
 
 
-    -  **Feature-rich**. Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? Configurable navigation? Custom taxonomies (categories, multiple authors, etc.)? We have all these things built-in. Oh yes, unlike many other static-site generators, our multi-column content layout work out of the box.  
+    -  **Feature-rich out of the box 🎁**. Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? Configurable navigation? Custom taxonomies (categories, multiple authors, etc.)? Image optimization? Custom handling of CSV and YAML data? We have all these things built-in. Oh yes, unlike many other static-site generators, our multi-column content layout work out of the box.  
 
 
-    - **Flexible and extensible**. Want to configure things in your way? Use simple yaml files. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. Want to use different markdown plugins or maybe your own custom shortcode? All of these things can de done pretty easily, without any prior knowledge. 
+    - **Flexible and extensible ✨**. Want to configure things in your way? Use simple yaml files. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. Want to use different markdown plugins or maybe your own custom shortcode? All of these things can de done pretty easily, without any prior knowledge or experience. 
 
 
     -  **Scalable**. Bestatic ultimately builds a bunch of static files. So, no need for database management, server maintenance, or constant security updates. A hassle-free way to manage large-scale websites.
@@ -42,7 +47,7 @@ parts:
     source: .
     plugin: python
     python-packages:
-    - Bestatic==0.0.30
+    - Bestatic==0.0.31
 
 
 apps:
