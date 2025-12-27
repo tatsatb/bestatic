@@ -9,7 +9,7 @@
 try:
     from ._version import __version__
 except ImportError:
-    __version__ = "0.0.34"
+    __version__ = "0.0.36"
 
 __author__ = "Tatsat Banerjee"
 

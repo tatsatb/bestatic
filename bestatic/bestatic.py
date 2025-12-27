@@ -12,13 +12,29 @@ import watchdog.observers
 
 
 # --- CRITICAL FIX START ---
-# We add the internal extraction directory to the PATH so 'python-magic' 
-# can find the bundled DLLs (libmagic.dll, etc.) on Windows.
+# Fix for PyInstaller: Find libmagic DLLs and add them to PATH
 if getattr(sys, 'frozen', False):
     bundle_dir = sys._MEIPASS
+    
+    # 1. Add the bundle root to PATH (always good practice)
     os.environ['PATH'] += os.pathsep + bundle_dir
     
-    # macOS specific: also set DYLD_LIBRARY_PATH for safety
+    # 2. Specifically look for libmagic binaries to fix the Windows error
+    # python-magic-bin usually puts them in magic/libmagic/
+    magic_lib = os.path.join(bundle_dir, 'magic', 'libmagic')
+    if os.path.exists(magic_lib):
+        os.environ['PATH'] += os.pathsep + magic_lib
+
+    # 3. Fallback: Recursively search for libmagic.dll just in case it's elsewhere
+    found_magic = False
+    for root, dirs, files in os.walk(bundle_dir):
+        for file in files:
+            if file == 'libmagic.dll' or file == 'magic1.dll':
+                if root not in os.environ['PATH']:
+                    os.environ['PATH'] += os.pathsep + root
+                found_magic = True
+    
+    # macOS specific helper
     current_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
     os.environ['DYLD_LIBRARY_PATH'] = bundle_dir + os.pathsep + current_dyld
 # --- CRITICAL FIX END ---
