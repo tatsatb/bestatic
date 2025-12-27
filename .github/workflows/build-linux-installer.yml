@@ -62,8 +62,18 @@ jobs:
       
       - name: Build with PyInstaller
         run: |
+          MAGIC_FILE=$(find /usr/lib/file /usr/share/file /usr/share/misc -name magic.mgc 2>/dev/null | head -n 1)
+          
+          if [ -z "$MAGIC_FILE" ]; then
+            echo "Error: Could not find magic.mgc on build system"
+            exit 1
+          fi
+
+          echo "Bundling magic database from: $MAGIC_FILE"
+          
           cd bestatic
           pyinstaller \
+            --add-data "$MAGIC_FILE:." \
             --collect-all bestatic \
             --recursive-copy-metadata Bestatic \
             --collect-all customblocks \

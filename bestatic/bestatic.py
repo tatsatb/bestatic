@@ -22,38 +22,54 @@ if getattr(sys, 'frozen', False):
         magic_lib = os.path.join(bundle_dir, 'magic', 'libmagic')
         if os.path.exists(magic_lib):
             os.environ['PATH'] += os.pathsep + magic_lib
-        # Fallback: Search recursively for DLLs
+        # Fallback search
         for root, dirs, files in os.walk(bundle_dir):
             if 'libmagic.dll' in files or 'magic1.dll' in files:
                 if root not in os.environ['PATH']:
                     os.environ['PATH'] += os.pathsep + root
 
-    # 2. macOS: Use bundled magic database (matches our bundled dylib)
-    elif sys.platform == 'darwin':
+    # 2. Linux & macOS: Force use of BUNDLED magic database
+    # This ensures libmagic.so (bundled) reads a compatible magic.mgc (bundled)
+    else:
         bundled_magic = os.path.join(bundle_dir, 'magic.mgc')
         if os.path.exists(bundled_magic):
             os.environ['MAGIC'] = bundled_magic
         
-        # Helper for finding the dylib
-        curr_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
-        os.environ['DYLD_LIBRARY_PATH'] = bundle_dir + os.pathsep + curr_dyld
-
-    # 3. Linux: Use SYSTEM magic database to avoid version mismatch & warnings
-    elif sys.platform.startswith('linux'):
-        # List of standard locations for magic.mgc on Linux
-        system_magic_paths = [
-            '/usr/share/file/magic.mgc',
-            '/usr/lib/file/magic.mgc',
-            '/usr/share/misc/magic.mgc',
-            '/usr/local/share/file/magic.mgc'
-        ]
-        # Point MAGIC env var to the system file if found
-        for path in system_magic_paths:
-            if os.path.exists(path):
-                os.environ['MAGIC'] = path
-                break
+        # macOS helper
+        if sys.platform == 'darwin':
+            curr_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
+            os.environ['DYLD_LIBRARY_PATH'] = bundle_dir + os.pathsep + curr_dyld
 # --- CRITICAL FIX END ---
 
+# --- WARNING SUPPRESSION START ---
+@contextmanager
+def suppress_stderr():
+    """
+    Context manager to suppress standard error (stderr).
+    This silences C-level warnings from libmagic (e.g., /etc/magic warnings).
+    """
+    try:
+        # Open a file descriptor to /dev/null
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        # Save the original stderr file descriptor
+        old_stderr = os.dup(sys.stderr.fileno())
+        # Replace stderr with /dev/null
+        sys.stderr.flush()
+        os.dup2(devnull, sys.stderr.fileno())
+        yield
+    except Exception:
+        # If anything goes wrong with redirection, just run the code normally
+        yield
+    finally:
+        # Restore original stderr
+        try:
+            sys.stderr.flush()
+            os.dup2(old_stderr, sys.stderr.fileno())
+            os.close(old_stderr)
+            os.close(devnull)
+        except Exception:
+            pass
+# --- WARNING SUPPRESSION END ---
 
 # Add parent directory to path when running as script
 if __name__ == '__main__' and __package__ is None:
