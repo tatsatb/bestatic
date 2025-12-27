@@ -12,35 +12,46 @@ import watchdog.observers
 
 
 # --- CRITICAL FIX START ---
-# Fix for PyInstaller: Find libmagic DLLs/Database and configure environment
+# Fix for PyInstaller: Configure environment for magic/libmagic
 if getattr(sys, 'frozen', False):
     bundle_dir = sys._MEIPASS
-    
-    # 1. Add the bundle root to PATH (Standard fix)
     os.environ['PATH'] += os.pathsep + bundle_dir
     
-    # 2. Windows: Look for libmagic binaries in the standard python-magic-bin location
-    magic_lib = os.path.join(bundle_dir, 'magic', 'libmagic')
-    if os.path.exists(magic_lib):
-        os.environ['PATH'] += os.pathsep + magic_lib
-
-    # 3. Windows Fallback: Recursively search for libmagic.dll in case it moved
-
-    for root, dirs, files in os.walk(bundle_dir):
-        for file in files:
-            if file == 'libmagic.dll' or file == 'magic1.dll':
+    # 1. Windows: Find bundled DLLs
+    if sys.platform == 'win32':
+        magic_lib = os.path.join(bundle_dir, 'magic', 'libmagic')
+        if os.path.exists(magic_lib):
+            os.environ['PATH'] += os.pathsep + magic_lib
+        # Fallback: Search recursively for DLLs
+        for root, dirs, files in os.walk(bundle_dir):
+            if 'libmagic.dll' in files or 'magic1.dll' in files:
                 if root not in os.environ['PATH']:
                     os.environ['PATH'] += os.pathsep + root
 
-    # 4. Linux/macOS: Force use of bundled magic database if present
-    # This fixes the "/etc/magic, 4: Warning" on Linux
-    bundled_magic_db = os.path.join(bundle_dir, 'magic.mgc')
-    if os.path.exists(bundled_magic_db):
-        os.environ['MAGIC'] = bundled_magic_db
+    # 2. macOS: Use bundled magic database (matches our bundled dylib)
+    elif sys.platform == 'darwin':
+        bundled_magic = os.path.join(bundle_dir, 'magic.mgc')
+        if os.path.exists(bundled_magic):
+            os.environ['MAGIC'] = bundled_magic
+        
+        # Helper for finding the dylib
+        curr_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
+        os.environ['DYLD_LIBRARY_PATH'] = bundle_dir + os.pathsep + curr_dyld
 
-    # macOS specific helper (Library Path)
-    current_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
-    os.environ['DYLD_LIBRARY_PATH'] = bundle_dir + os.pathsep + current_dyld
+    # 3. Linux: Use SYSTEM magic database to avoid version mismatch & warnings
+    elif sys.platform.startswith('linux'):
+        # List of standard locations for magic.mgc on Linux
+        system_magic_paths = [
+            '/usr/share/file/magic.mgc',
+            '/usr/lib/file/magic.mgc',
+            '/usr/share/misc/magic.mgc',
+            '/usr/local/share/file/magic.mgc'
+        ]
+        # Point MAGIC env var to the system file if found
+        for path in system_magic_paths:
+            if os.path.exists(path):
+                os.environ['MAGIC'] = path
+                break
 # --- CRITICAL FIX END ---
 
 
