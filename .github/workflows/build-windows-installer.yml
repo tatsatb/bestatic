@@ -312,18 +312,6 @@ jobs:
         env:
           VERSION_NUMBER: ${{ github.event.inputs.version }}
       
-      - name: Create or Update Release
-        if: github.event.inputs.create_release == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          draft: false
-          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
-          files: |
-            installer_output/bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
       - name: Generate checksums
         if: github.event.inputs.create_release == 'true'
         run: |
@@ -341,12 +329,16 @@ jobs:
           
           Write-Host "✓ Checksum saved to: $checksumFile"
       
-      - name: Upload checksum
+      - name: Create or Update Release
         if: github.event.inputs.create_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.version }}
+          draft: true
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
           files: |
+            installer_output/bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe
             installer_output/bestatic_setup_v${{ steps.version.outputs.VERSION }}.exe.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          

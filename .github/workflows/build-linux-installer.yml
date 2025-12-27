@@ -67,6 +67,7 @@ jobs:
             --collect-all bestatic \
             --recursive-copy-metadata Bestatic \
             --collect-all customblocks \
+            --hidden-import yamlns \
             --collect-all markdown \
             --recursive-copy-metadata mkdocs-material \
             --recursive-copy-metadata mkdocs \
@@ -322,19 +323,7 @@ jobs:
           name: bestatic-linux-installer-${{ matrix.arch }}
           path: installer_output/bestatic-*.tar.gz
           retention-days: 5
-      
-      - name: Create or Update Release
-        if: github.event.inputs.create_release == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          draft: false
-          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
-          files: |
-            installer_output/bestatic-*.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+          
       - name: Generate checksums
         if: github.event.inputs.create_release == 'true'
         run: |
@@ -352,12 +341,16 @@ jobs:
           
           echo "✓ Checksum saved to: $CHECKSUM_FILE"
       
-      - name: Upload checksum
+      - name: Create or Update Release
         if: github.event.inputs.create_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.version }}
+          draft: true
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
           files: |
+            installer_output/bestatic-*.tar.gz
             installer_output/bestatic-*.tar.gz.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
