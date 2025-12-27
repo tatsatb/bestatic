@@ -13,16 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 class ImageProcessor:
-    """Process images for optimization and format conversion."""
+    """Process images for optimization and format conversion to WebP."""
     
     # Supported input formats
     PROCESSABLE_FORMATS = {'.jpg', '.jpeg', '.png', '.gif'}
-    
-    # Output format configurations
-    FORMAT_EXTENSIONS = {
-        'webp': '.webp',
-        'avif': '.avif'
-    }
     
     def __init__(self, config: Dict):
         """
@@ -30,14 +24,13 @@ class ImageProcessor:
         
         Args:
             config: Image processing configuration dictionary
-                   Expected keys: enabled, formats, quality, keep_original, etc.
+                   Expected keys: enabled, quality, keep_original
         """
         if Image is None:
             raise ImportError("Pillow is required for image processing. Install with: pip install Pillow")
         
         self.config = config
         self.enabled = config.get('enabled', False)
-        self.formats = config.get('formats', ['webp'])
         self.quality = config.get('quality', 80)
         self.keep_original = config.get('keep_original', False)
         
@@ -65,15 +58,15 @@ class ImageProcessor:
     
     def process_image(self, input_path: str, output_dir: str) -> Dict[str, str]:
         """
-        Process a single image: convert, optimize, and save.
+        Process a single image: convert to WebP, optimize, and save.
         
         Args:
             input_path: Path to input image
             output_dir: Directory where processed images should be saved
             
         Returns:
-            Dictionary mapping format to output path
-            Example: {'webp': 'output/images/photo.webp', 'original': 'output/images/photo.jpg'}
+            Dictionary with 'webp' key mapping to output path
+            Example: {'webp': 'output/images/photo.webp'}
         """
         results = {}
         input_path_obj = Path(input_path)
@@ -83,71 +76,83 @@ class ImageProcessor:
         output_dir_obj.mkdir(parents=True, exist_ok=True)
         
         try:
+            # Check file size first
+            file_size_mb = Path(input_path).stat().st_size / (1024 * 1024)
+            if file_size_mb > 10:
+                logger.warning(f"Large image detected ({file_size_mb:.1f}MB): {input_path} - this may take a while...")
+            
             # Open and process image
             with Image.open(input_path) as img:
-                # Convert RGBA to RGB for formats that don't support transparency
-                if img.mode in ('RGBA', 'LA', 'P'):
-                    # Check if image actually has transparency
-                    if img.mode == 'P' and 'transparency' in img.info:
-                        # Keep as-is for WebP (supports transparency)
-                        if 'webp' not in self.formats:
-                            # Convert to RGB with white background
-                            background = Image.new('RGB', img.size, (255, 255, 255))
-                            if img.mode == 'P':
-                                img = img.convert('RGBA')
-                            background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
-                            img = background
-                    elif img.mode in ('RGBA', 'LA'):
-                        # WebP supports transparency, but for other formats use white background
-                        if 'webp' in self.formats:
-                            pass  # Keep RGBA for WebP
-                        else:
-                            background = Image.new('RGB', img.size, (255, 255, 255))
-                            background.paste(img, mask=img.split()[-1])
-                            img = background
+                # Check image dimensions
+                width, height = img.size
+                total_pixels = width * height
+                if total_pixels > 10_000_000:  # 10 megapixels
+                    logger.warning(f"Large image dimensions ({width}x{height}): {input_path} - processing...")
+                
+                # Downscale very large images for faster processing
+                max_dimension = 2400  # Maximum width or height
+                if width > max_dimension or height > max_dimension:
+                    # Calculate new dimensions maintaining aspect ratio
+                    if width > height:
+                        new_width = max_dimension
+                        new_height = int((max_dimension / width) * height)
                     else:
-                        img = img.convert('RGB')
-                elif img.mode != 'RGB':
+                        new_height = max_dimension
+                        new_width = int((max_dimension / height) * width)
+                    
+                    logger.info(f"Resizing large image from {width}x{height} to {new_width}x{new_height}: {input_path}")
+                    img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                    width, height = new_width, new_height
+                    total_pixels = width * height
+                
+                # Convert RGBA to RGB for formats that don't support transparency
+                # WebP supports transparency, so we can keep RGBA/P modes
+                if img.mode in ('RGBA', 'LA', 'P'):
+                    # WebP handles transparency well, keep as-is
+                    pass
+                elif img.mode != 'RGB' and img.mode not in ('RGBA', 'LA', 'P'):
+                    # Convert other modes to RGB
                     img = img.convert('RGB')
                 
                 # Save in requested formats
                 base_name = input_path_obj.stem
                 
-                for fmt in self.formats:
-                    if fmt not in self.FORMAT_EXTENSIONS:
-                        logger.warning(f"Unsupported format '{fmt}', skipping")
-                        continue
-                    
-                    ext = self.FORMAT_EXTENSIONS[fmt]
-                    output_path = output_dir_obj / f"{base_name}{ext}"
-                    
-                    # Save with format-specific options
-                    save_kwargs = {'quality': self.quality}
-                    
-                    if fmt == 'webp':
-                        save_kwargs['method'] = 6  # Better compression
-                    elif fmt == 'avif':
-                        # AVIF support may vary by Pillow version
-                        pass
-                    
-                    img.save(str(output_path), format=fmt.upper(), **save_kwargs)
-                    results[fmt] = str(output_path)
-                    logger.info(f"Converted {input_path} to {output_path}")
+                # Convert to WebP
+                output_path = output_dir_obj / f"{base_name}.webp"
+                
+                # WebP save options
+                save_kwargs = {'quality': self.quality}
+                
+                # Use fastest method for large images
+                if total_pixels > 4_000_000:  # 4 megapixels
+                    save_kwargs['method'] = 1  # Very fast encoding (0-6, lower = faster)
+                    logger.info(f"Using very fast WebP encoding for large image: {input_path}")
+                elif total_pixels > 2_000_000:  # 2 megapixels
+                    save_kwargs['method'] = 3  # Fast encoding
+                else:
+                    save_kwargs['method'] = 6  # Better compression for smaller images
+                
+                logger.info(f"Converting {input_path} to WebP...")
+                img.save(str(output_path), format='WEBP', **save_kwargs)
+                results['webp'] = str(output_path)
+                logger.info(f"✓ Converted {input_path} to {output_path}")
                 
                 # Keep original if configured
                 if self.keep_original:
                     original_output = output_dir_obj / input_path_obj.name
                     if str(original_output) != input_path:
-                        img_original = Image.open(input_path)
-                        img_original.save(str(original_output))
+                        # Use the already open image
+                        img.save(str(original_output))
                         results['original'] = str(original_output)
+                        logger.info(f"Kept original: {original_output}")
         
         except Exception as e:
             logger.error(f"Error processing image {input_path}: {e}")
-            # Copy original on error
-            original_output = output_dir_obj / input_path_obj.name
-            if str(original_output) != input_path:
-                import shutil
+            # Only copy original on error if we want to keep originals
+            if self.keep_original:
+                original_output = output_dir_obj / input_path_obj.name
+                if str(original_output) != input_path:
+                    import shutil
                 shutil.copy2(input_path, original_output)
                 results['original'] = str(original_output)
         
@@ -167,26 +172,24 @@ class ImageProcessor:
     
     def _build_conversion_map(self, processed_files: Dict[str, Dict[str, str]]) -> Dict[str, str]:
         """
-        Build a mapping of original filenames to converted filenames.
+        Build a mapping of original filenames to converted WebP filenames.
         
         Args:
             processed_files: Dict mapping input paths to result dicts
             
         Returns:
-            Dict mapping original filename to converted filename
+            Dict mapping original filename to converted WebP filename
         """
         conversion_map = {}
         
         for input_path, results in processed_files.items():
             input_name = Path(input_path).name
             
-            # Use first available format
-            for fmt in self.formats:
-                if fmt in results:
-                    converted_path = results[fmt]
-                    converted_name = Path(converted_path).name
-                    conversion_map[input_name] = converted_name
-                    break
+            # Use WebP format
+            if 'webp' in results:
+                converted_path = results['webp']
+                converted_name = Path(converted_path).name
+                conversion_map[input_name] = converted_name
         
         return conversion_map
     
@@ -205,8 +208,23 @@ class ImageProcessor:
             return 0
         
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                content = f.read()
+            # Try to read as text file with multiple encoding attempts
+            content = None
+            encodings = ['utf-8', 'utf-16', 'utf-16-le', 'utf-16-be', 'latin-1']
+            
+            for encoding in encodings:
+                try:
+                    with open(filepath, 'r', encoding=encoding) as f:
+                        content = f.read()
+                    file_encoding = encoding
+                    break
+                except (UnicodeDecodeError, UnicodeError):
+                    continue
+            
+            if content is None:
+                # File is binary or has incompatible encoding, skip it
+                logger.debug(f"Skipping file with unsupported encoding: {filepath}")
+                return 0
             
             original_content = content
             replacements = 0
@@ -253,9 +271,14 @@ class ImageProcessor:
                 content = re.sub(pattern, replace_func, content)
             
             if content != original_content:
-                with open(filepath, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                logger.info(f"Updated {replacements} image references in {filepath}")
+                try:
+                    with open(filepath, 'w', encoding=file_encoding) as f:
+                        f.write(content)
+                    logger.info(f"Updated {replacements} image references in {filepath}")
+                except (UnicodeEncodeError, UnicodeError):
+                    # File had binary content that we modified, skip writing it back
+                    logger.debug(f"Skipping writing to file with encoding issues: {filepath}")
+                    return 0
             
             return replacements
         

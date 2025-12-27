@@ -360,7 +360,25 @@ def generator(**config):
     if config and "image_processing" in config and config["image_processing"].get("enabled", False):
         try:
             image_processor = ImageProcessor(config["image_processing"])
-            image_conversion_map = image_processor.process_static_content(source, destination)
+            
+            # Process images in static-content folder
+            map1 = image_processor.process_static_content(source, destination)
+            image_conversion_map.update(map1)
+            
+            # Process images in static folder (from theme)
+            map2 = image_processor.process_static_content(source_theme, destination_theme)
+            image_conversion_map.update(map2)
+            
+            # Remove original files if keep_original is False
+            if not image_processor.keep_original:
+                import glob
+                # Remove original image files from both directories
+                for base_dir in [destination, destination_theme]:
+                    for original_path in glob.glob(os.path.join(base_dir, "**", "*"), recursive=True):
+                        if os.path.isfile(original_path):
+                            ext = os.path.splitext(original_path)[1].lower()
+                            if ext in ['.jpg', '.jpeg', '.png', '.gif']:
+                                os.remove(original_path)
         except ImportError:
             print("Warning: Pillow not installed. Image processing disabled. Install with: pip install Pillow")
         except Exception as e:
