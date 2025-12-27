@@ -52,49 +52,106 @@ jobs:
           pip install Bestatic
           pip install pyinstaller
       
+      - name: Create PyInstaller spec file
+        run: |
+          cd bestatic
+          
+          $specContent = @'
+          # -*- mode: python ; coding: utf-8 -*-
+          from PyInstaller.utils.hooks import collect_all, copy_metadata
+          
+          datas = []
+          binaries = []
+          hiddenimports = []
+          
+          # Collect all packages
+          packages = [
+              'bestatic', 'markdown', 'mkdocs', 'material', 'bs4', 
+              'pymdown-extensions', 'pygments', 'jinja2', 'watchdog',
+              'chardet', 'markdown_include', 'tomli', 'pillow', 
+              'soupsieve', 'setuptools'
+          ]
+          
+          for package in packages:
+              try:
+                  tmp_ret = collect_all(package)
+                  datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
+              except:
+                  pass
+          
+          # Copy metadata for specific packages
+          metadata_packages = [
+              'Bestatic', 'mkdocs-material', 'mkdocs', 'beautifulsoup4',
+              'pymdown-extensions', 'pygments', 'mkdocs-material-extensions',
+              'jinja2', 'watchdog', 'pyyaml', 'chardet', 'markdown_include',
+              'tomli', 'pillow', 'soupsieve', 'setuptools'
+          ]
+          
+          for package in metadata_packages:
+              try:
+                  datas += copy_metadata(package, recursive=True)
+              except:
+                  pass
+          
+          # Handle customblocks separately with error handling
+          try:
+              from PyInstaller.utils.hooks import collect_submodules
+              hiddenimports += ['customblocks']
+          except:
+              pass
+          
+          a = Analysis(
+              ['bestatic.py'],
+              pathex=[],
+              binaries=binaries,
+              datas=datas,
+              hiddenimports=hiddenimports,
+              hookspath=[],
+              hooksconfig={},
+              runtime_hooks=[],
+              excludes=[],
+              noarchive=False,
+          )
+          
+          pyz = PYZ(a.pure)
+          
+          exe = EXE(
+              pyz,
+              a.scripts,
+              [],
+              exclude_binaries=True,
+              name='bestatic',
+              debug=False,
+              bootloader_ignore_signals=False,
+              strip=False,
+              upx=True,
+              console=True,
+              disable_windowed_traceback=False,
+              argv_emulation=False,
+              target_arch=None,
+              codesign_identity=None,
+              entitlements_file=None,
+              icon='../windows_exe/icon.ico',
+          )
+          
+          coll = COLLECT(
+              exe,
+              a.binaries,
+              a.datas,
+              strip=False,
+              upx=True,
+              upx_exclude=[],
+              name='bestatic',
+          )
+          '@
+          
+          Set-Content -Path "bestatic.spec" -Value $specContent -Encoding UTF8
+          Write-Host "✓ PyInstaller spec file created"
+      
       - name: Build with PyInstaller
         run: |
           cd bestatic
-          pyinstaller `
-            --collect-all bestatic `
-            --recursive-copy-metadata Bestatic `
-            --collect-all customblocks `
-            --collect-all markdown `
-            --recursive-copy-metadata mkdocs-material `
-            --recursive-copy-metadata mkdocs `
-            --collect-all mkdocs `
-            --collect-all material `
-            --collect-all bs4 `
-            --recursive-copy-metadata beautifulsoup4 `
-            --collect-all pymdown-extensions `
-            --recursive-copy-metadata pymdown-extensions `
-            --collect-all pygments `
-            --recursive-copy-metadata pygments `
-            --recursive-copy-metadata mkdocs-material-extensions `
-            --collect-all jinja2 `
-            --recursive-copy-metadata jinja2 `
-            --collect-all watchdog `
-            --recursive-copy-metadata watchdog `
-            --collect-all pyyaml `
-            --recursive-copy-metadata pyyaml `
-            --collect-all chardet `
-            --recursive-copy-metadata chardet `
-            --collect-all markdown_include `
-            --recursive-copy-metadata markdown_include `
-            --collect-all tomli `
-            --recursive-copy-metadata tomli `
-            --collect-all pillow `
-            --recursive-copy-metadata pillow `
-            --collect-all soupsieve `
-            --recursive-copy-metadata soupsieve `
-            --collect-all setuptools `
-            --recursive-copy-metadata setuptools `
-            --onedir `
-            --icon ../windows_exe/icon.ico `
-            --console `
-            --noconfirm `
-            --name bestatic `
-            bestatic.py
+          pyinstaller bestatic.spec --noconfirm
       
       - name: Verify build
         run: |
