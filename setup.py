@@ -61,6 +61,7 @@ setup(
         'Markdown==3.10',
         'markdown-include==0.8.1',
         'MarkupSafe==3.0.3',
+        'mkdocs-material==9.7.1',
         'Pygments==2.19.2',
         'python-frontmatter==1.1.0',
         'PyYAML==6.0.3',
