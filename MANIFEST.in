@@ -2,4 +2,3 @@ include README.md
 include LICENSE
 include requirements.txt
 include bestatic.yaml
-graft themes

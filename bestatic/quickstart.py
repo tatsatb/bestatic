@@ -1,4 +1,4 @@
-def quickstart(*theme):
+def quickstart(theme=None):
     import os
     import yaml
     import frontmatter

@@ -17,8 +17,10 @@ def generator(**config):
     from feedgen.feed import FeedGenerator
     import pytz
     import json
+    import csv
     from bestatic import bestaticSitemap
     from bestatic.shortcodes import ShortcodeProcessor
+    from bestatic.imageprocessor import ImageProcessor
 
 
     def copy_if_exists(source, destination):
@@ -182,6 +184,36 @@ def generator(**config):
                         taxonomy_yamls[taxonomy_name] = yaml.load(f, Loader=yaml.Loader)
         return taxonomy_yamls
 
+    def load_data_files():
+        """Load all data files (CSV and YAML) from _includes/datafiles directory"""
+        data_files = {}
+        datafiles_dir = os.path.join(current_directory, '_includes', 'datafiles')
+        
+        if not os.path.exists(datafiles_dir):
+            return data_files
+        
+        for data_file in os.listdir(datafiles_dir):
+            file_path = os.path.join(datafiles_dir, data_file)
+            file_name = os.path.splitext(data_file)[0]
+            file_ext = os.path.splitext(data_file)[1].lower()
+            
+            try:
+                if file_ext == '.yaml' or file_ext == '.yml':
+                    # Load YAML file
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data_files[file_name] = yaml.load(f, Loader=yaml.Loader)
+                
+                elif file_ext == '.csv':
+                    # Load CSV file as list of dictionaries
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        csv_reader = csv.DictReader(f)
+                        data_files[file_name] = list(csv_reader)
+                        
+            except Exception as e:
+                warnings.warn(f"Error loading data file {data_file}: {str(e)}")
+        
+        return data_files
+
 
     class Parsing:
         def __init__(self, path_of_md):
@@ -247,6 +279,7 @@ def generator(**config):
     user_input_n = config['number_of_pages'] if config and "number_of_pages" in config else 1
     posts_in_page = config['include_post_in_pages'] if config and "include_post_in_pages" in config else False
     enable_shortcodes = config["SHORTCODES"] if config and "SHORTCODES" in config else False
+    extra_data = config["extra_data"] if config and "extra_data" in config else {}
     
 
     default_extensions = [
@@ -322,6 +355,17 @@ def generator(**config):
     copy_if_exists(source, destination)
     copy_if_exists(source_root_import, destination_root_import)
 
+    # Image processing - convert and optimize images if enabled
+    image_conversion_map = {}
+    if config and "image_processing" in config and config["image_processing"].get("enabled", False):
+        try:
+            image_processor = ImageProcessor(config["image_processing"])
+            image_conversion_map = image_processor.process_static_content(source, destination)
+        except ImportError:
+            print("Warning: Pillow not installed. Image processing disabled. Install with: pip install Pillow")
+        except Exception as e:
+            print(f"Warning: Image processing failed: {e}")
+
 
     if config and "comments" in config and config["comments"]["enabled"] is True:
         if config["comments"]["system"] == "giscus":
@@ -363,6 +407,9 @@ def generator(**config):
     env.trim_blocks = True
     env.lstrip_blocks = True
 
+    # Load all data files from _includes/datafiles
+    data_files = load_data_files()
+
     home_template =  None
     page_template = None
     post_template = None
@@ -372,7 +419,7 @@ def generator(**config):
 
     if os.path.exists(os.path.join(working_directory, "templates", "home.html.jinja2")):
         home_template = env.get_template('home.html.jinja2')
-        home_final = home_template.render(title=site_title, description=site_description, nav=nav)
+        home_final = home_template.render(title=site_title, description=site_description, nav=nav, extra_data=extra_data, data_files=data_files)
         with open(f"_output/index.html", "w", encoding="utf-8") as file:
             file.write(home_final)
 
@@ -432,7 +479,7 @@ def generator(**config):
                                            taxonomy_yamls=all_taxonomy_yamls, 
                                            post_directory_singular=post_directory_singular, 
                                            post_directory_plural=post_directory_plural, 
-                                           disqus=disqus, giscus=giscus, nav=nav)
+                                           disqus=disqus, giscus=giscus, nav=nav, extra_data=extra_data, data_files=data_files)
 
             prev_slug = f"{POSTS[post].path_info}/{POSTS_SORTED[post].slug}"
             prev_title = POSTS_SORTED[post].title
@@ -452,9 +499,9 @@ def generator(**config):
 
         for jj in range(len(split_dicts)):
 
-            list_final = list_template.render(title=site_title, description=site_description, post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, post=split_dicts[jj], page_index=jj, page_range=len(split_dicts), taxonomy_yamls=all_taxonomy_yamls, nav=nav)
+            list_final = list_template.render(title=site_title, description=site_description, post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, post=split_dicts[jj], page_index=jj, page_range=len(split_dicts), taxonomy_yamls=all_taxonomy_yamls, nav=nav, extra_data=extra_data, data_files=data_files)
 
-            paginator = f"_output/{post_directory_plural}/{jj + 1}" if jj != 0 else f"_output/{post_directory_plural}"
+            paginator = f"_output/{post_directory_plural}{jj + 1}" if jj != 0 else f"_output/{post_directory_plural}"
 
             if not os.path.exists(paginator):
                 os.makedirs(paginator, exist_ok=True)
@@ -462,7 +509,7 @@ def generator(**config):
                 file.write(list_final)
 
         if homepage_type == "list":
-            shutil.move("_output/{post_directory_plural}/index.html", "_output/index.html")
+            shutil.move(f"_output/{post_directory_plural}/index.html", "_output/index.html")
 
         taxonomies = config["taxonomies"] if config and "taxonomies" in config else {
             "tags": {
@@ -510,7 +557,9 @@ def generator(**config):
                     taxonomy_name=taxonomy_name,
                     taxonomy_directory=taxonomy_config["taxonomy_directory"],
                     taxonomy_yaml=taxonomy_yaml,
-                    nav=nav
+                    nav=nav,
+                    extra_data=extra_data,
+                    data_files=data_files
                 )
                 
                 if not os.path.exists(output_path):
@@ -532,16 +581,16 @@ def generator(**config):
                 sections = parse_sections(PAGES[page].content)
 
             if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == 404 and error_template:
-                page_final = error_template.render(title=site_title, description=site_description, nav=nav)
+                page_final = error_template.render(title=site_title, description=site_description, nav=nav, extra_data=extra_data, data_files=data_files)
             else:
                 POSTS_SORTED_in_page = POSTS_SORTED if posts_in_page else None                
                 if "template" in PAGES[page].metadata:
                     page_template = env.get_template(PAGES[page].metadata['template'])
-                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, post_list = POSTS_SORTED_in_page,post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav)
+                    page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, post_list = POSTS_SORTED_in_page,post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav, extra_data=extra_data, data_files=data_files)
                 else:
                     page_template = env.get_template('page.html.jinja2')
                     page_final = page_template.render(title=site_title, description=site_description, page=PAGES[page],  sections=sections, post_list = POSTS_SORTED_in_page,
-                    post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav)
+                    post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural, disqus=disqus, giscus=giscus, nav=nav, extra_data=extra_data, data_files=data_files)
 
             if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == "index.html":
                 with open(f"_output/index.html", "w", encoding="utf-8") as file:
@@ -649,6 +698,15 @@ def generator(**config):
                     file.write(new_content)
     else:
         pass
+
+    # Update image references in HTML/CSS/JS files if images were processed
+    if image_conversion_map and config and "image_processing" in config:
+        try:
+            image_processor = ImageProcessor(config["image_processing"])
+            output_dir = os.path.join(current_directory, "_output")
+            image_processor.scan_and_update_output(output_dir, image_conversion_map)
+        except Exception as e:
+            print(f"Warning: Failed to update image references: {e}")
 
     return None
 

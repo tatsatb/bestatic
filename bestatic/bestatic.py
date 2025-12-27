@@ -9,6 +9,11 @@ import shutil
 import multiprocessing
 import watchdog.events
 import watchdog.observers
+
+# Add parent directory to path when running as script
+if __name__ == '__main__' and __package__ is None:
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from bestatic.generator import generator
 from bestatic.httpserver import bestatic_serv
 from bestatic.quickstart import quickstart
@@ -16,16 +21,17 @@ from bestatic.newcontent import newpost, newpage
 import bestatic
 
 
-def run_server(directory):
-    bestatic_serv(directory) if directory else bestatic_serv()
+def run_server(directory, port):
+    bestatic_serv(directory, port=port) if directory else bestatic_serv(port=port)
 
 
-def run_watcher(config, *directoryname):
+def run_watcher(config, port, *directoryname):
     class RebuildEventHandler(watchdog.events.PatternMatchingEventHandler):
         # last_rebuild_time = datetime.datetime.now()
         # delay = datetime.timedelta(seconds=1)
         def __init__(self):
             self.config = config
+            self.port = port
             dir_ignore = os.path.join(os.getcwd(), directoryname[0]) if directoryname[0] else None
             if directoryname[0]:
                 super().__init__(patterns=['*'], ignore_patterns=['*~', '.*', os.path.join(os.getcwd(), "_output"),
@@ -60,7 +66,7 @@ def run_watcher(config, *directoryname):
                     os.rename("_output", directoryname[0])
                 else:
                     pass
-                print("Rebuild is successful!!\nClick http://localhost:8080 to visit "
+                print(f"Rebuild is successful!!\nClick http://localhost:{self.port} to visit "
                         "the live website again.\nMonitoring files again...\n"
                         "Press Ctrl+C to stop anytime...")
 
@@ -72,7 +78,9 @@ def run_watcher(config, *directoryname):
         "posts",
         "pages",
         "static-content",
-        "_includes"
+        "_includes",
+        "_mddata",
+        "_shortcodes"
     ]
 
     for directory in directories_to_watch:
@@ -124,12 +132,12 @@ def main():
                                               "use the 'Amazing' theme, provided is there in the 'themes' directory."
                                               " You can create your own theme or download more from the GitHub repo")
     parser.add_argument("--serve", "-s", action="store_true", help="Start server after the build. You can visit"
-                                                                   " https://localhost:8080 to visit the live version of your"
+                                                                   " http://localhost:8080 (or http://localhost:<port>) to visit the live version of your"
                                                                    " webpage locally.")
     parser.add_argument("--autoreload", "-a", action="store_true",
                         help="When '-a' or '--autoreload' is specified, bestatic will watch the current directory "
-                             "recursively for for any changes in files and then will automatically rebuild the website. "
-                             "Use 'bestatic -sa' and reload https://localhost:8080 to see your changes in action live!")
+                             "recursively for any changes in files and then will automatically rebuild the website. "
+                             "Use 'bestatic -sa' and reload http://localhost:8080 (or http://localhost:<port>, if -n <port> flag was used) to see your changes in action live!")
 
     parser.add_argument("--projectsite", "-p", help="Use this flag if and only if you are deploying your "
                                                     "website as a Github (or Gitlab) Pages 'Project site' (and not "
@@ -137,6 +145,8 @@ def main():
                                                     "you are deploying your site to https://<username>.github.io/<repository> "
                                                     "and not to https://<username>.github.io or https://yourdomain.com."
                                                     " Please use this format: bestatic -p https://<username>.github.io/<repository>.")
+
+    parser.add_argument("--portnumber", "-n", type=int, default=8080, help="Specify the port number for the local server. For example: bestatic --serve --portnumber 9999 or bestatic -sn 9999. By default (i.e., if -n or --portnumber flag is absent), Bestatic uses port number 8080. ")
 
     args = parser.parse_args()
 
@@ -185,7 +195,7 @@ def main():
             print("\nThank you for trying out Bestatic!\n"
                   "Please note that you need to have have a 'bestatic.yaml' file and 'themes' directory within the working directory "
                   "to correctly build the site.\nYou can generate a bestatic.yaml file by running 'bestatic quickstart'. \n"
-                  "You can download a theme from the GitHub repo.\n"
+                  "You can download a theme from the GitHub theme repo: https://github.com/tatsatb/bestatic-themes.\n"
                   "After having those in current directory, please run the program again.\n"
                   "If you are starting the program graphically from desktop or start manu icon, please retry launching "
                   "it from the command line and from the correct directory. \n\n"
@@ -205,7 +215,7 @@ def main():
         is_exist = os.path.exists(path)
         if not is_exist:
             raise FileNotFoundError(
-                f"Theme directory does not exist! Please make sure a proper theme is present inside 'themes' directory")
+                f"Theme directory does not exist! Please make sure a proper theme is present inside 'themes' directory.")
 
         if args.projectsite:
             config["projectsite"] = args.projectsite
@@ -220,11 +230,11 @@ def main():
 
     if args.autoreload and args.serve:
         # Start server in a separate process
-        server_process = multiprocessing.Process(target=run_server, args=(args.directory,))
+        server_process = multiprocessing.Process(target=run_server, args=(args.directory, args.portnumber))
         server_process.start()
 
         try:
-            run_watcher(config, args.directory)
+            run_watcher(config, args.portnumber, args.directory)
         except KeyboardInterrupt:
             server_process.terminate()  # Terminate the server process
             server_process.join()  # Wait for the process to finish
@@ -232,7 +242,7 @@ def main():
             print("Bestatic will now stop watching files...")
 
     elif args.serve and not args.autoreload:
-        bestatic_serv(args.directory) if args.directory else bestatic_serv()
+        bestatic_serv(args.directory, port=args.portnumber) if args.directory else bestatic_serv(port=args.portnumber)
     return None
 
 

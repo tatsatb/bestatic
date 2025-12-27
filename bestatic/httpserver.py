@@ -7,8 +7,8 @@ class ThreadedHTTPServer(ThreadingMixIn, TCPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-def bestatic_serv(*directory):
-    PORT = 8080
+def bestatic_serv(*directory, port=8080):
+    PORT = port
     DIRECTORY = directory[0] if directory else "_output"
 
     class Handler(http.server.SimpleHTTPRequestHandler):
@@ -51,7 +51,7 @@ def bestatic_serv(*directory):
     with ThreadedHTTPServer(("", PORT), Handler) as httpd:
         httpd.timeout = 1
         print("Serving at port", PORT)
-        print("Click http://localhost:8080 to visit the live website")
+        print(f"Click http://localhost:{PORT} to visit the live website")
         print("Click Ctrl+C to shut down the server")
         try:
             httpd.serve_forever()

@@ -83,7 +83,8 @@ jobs:
             --recursive-copy-metadata markdown_include `
             --collect-all tomli `
             --recursive-copy-metadata tomli `
-            --collect-all tomli_w `
+            --collect-all pillow `
+            --recursive-copy-metadata pillow `
             --collect-all soupsieve `
             --recursive-copy-metadata soupsieve `
             --collect-all setuptools `
