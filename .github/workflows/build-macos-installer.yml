@@ -57,7 +57,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install Bestatic
+          pip install .
           pip install pyinstaller
 
       - name: Install libmagic (System Dependency)
@@ -296,4 +296,3 @@ jobs:
             installer_output/bestatic_v*.pkg.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          

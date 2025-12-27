@@ -12,29 +12,33 @@ import watchdog.observers
 
 
 # --- CRITICAL FIX START ---
-# Fix for PyInstaller: Find libmagic DLLs and add them to PATH
+# Fix for PyInstaller: Find libmagic DLLs/Database and configure environment
 if getattr(sys, 'frozen', False):
     bundle_dir = sys._MEIPASS
     
-    # 1. Add the bundle root to PATH (always good practice)
+    # 1. Add the bundle root to PATH (Standard fix)
     os.environ['PATH'] += os.pathsep + bundle_dir
     
-    # 2. Specifically look for libmagic binaries to fix the Windows error
-    # python-magic-bin usually puts them in magic/libmagic/
+    # 2. Windows: Look for libmagic binaries in the standard python-magic-bin location
     magic_lib = os.path.join(bundle_dir, 'magic', 'libmagic')
     if os.path.exists(magic_lib):
         os.environ['PATH'] += os.pathsep + magic_lib
 
-    # 3. Fallback: Recursively search for libmagic.dll just in case it's elsewhere
-    found_magic = False
+    # 3. Windows Fallback: Recursively search for libmagic.dll in case it moved
+
     for root, dirs, files in os.walk(bundle_dir):
         for file in files:
             if file == 'libmagic.dll' or file == 'magic1.dll':
                 if root not in os.environ['PATH']:
                     os.environ['PATH'] += os.pathsep + root
-                found_magic = True
-    
-    # macOS specific helper
+
+    # 4. Linux/macOS: Force use of bundled magic database if present
+    # This fixes the "/etc/magic, 4: Warning" on Linux
+    bundled_magic_db = os.path.join(bundle_dir, 'magic.mgc')
+    if os.path.exists(bundled_magic_db):
+        os.environ['MAGIC'] = bundled_magic_db
+
+    # macOS specific helper (Library Path)
     current_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
     os.environ['DYLD_LIBRARY_PATH'] = bundle_dir + os.pathsep + current_dyld
 # --- CRITICAL FIX END ---

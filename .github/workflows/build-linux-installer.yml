@@ -57,13 +57,25 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install Bestatic
+          pip install .
           pip install pyinstaller
       
       - name: Build with PyInstaller
         run: |
+          # Find the system magic database
+          # Usually in /usr/lib/file/ or /usr/share/file/
+          MAGIC_FILE=$(find /usr/lib/file /usr/share/file -name magic.mgc 2>/dev/null | head -n 1)
+          
+          if [ -z "$MAGIC_FILE" ]; then
+            echo "Error: Could not find magic.mgc"
+            exit 1
+          fi
+
+          echo "Bundling magic database from: $MAGIC_FILE"
+
           cd bestatic
           pyinstaller \
+            --add-data "$MAGIC_FILE:." \
             --collect-all bestatic \
             --recursive-copy-metadata Bestatic \
             --collect-all customblocks \
@@ -353,4 +365,3 @@ jobs:
             installer_output/bestatic-*.tar.gz.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
