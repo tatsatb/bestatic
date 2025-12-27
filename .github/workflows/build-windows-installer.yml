@@ -76,7 +76,7 @@ jobs:
               'bestatic', 'markdown', 'mkdocs', 'material', 'bs4', 
               'pymdown-extensions', 'pygments', 'jinja2', 'watchdog',
               'chardet', 'markdown_include', 'tomli', 'pillow', 
-              'soupsieve', 'setuptools'
+              'soupsieve', 'setuptools', 'magic'
           ]
           
           for package in packages:
@@ -91,7 +91,7 @@ jobs:
               'Bestatic', 'mkdocs-material', 'mkdocs', 'beautifulsoup4',
               'pymdown-extensions', 'pygments', 'mkdocs-material-extensions',
               'jinja2', 'watchdog', 'pyyaml', 'chardet', 'markdown_include',
-              'tomli', 'pillow', 'soupsieve', 'setuptools'
+              'tomli', 'pillow', 'soupsieve', 'setuptools', 'python-magic-bin'
           ]
           
           for package in metadata_packages:

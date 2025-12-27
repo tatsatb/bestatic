@@ -97,6 +97,8 @@ jobs:
             --recursive-copy-metadata soupsieve \
             --collect-all setuptools \
             --recursive-copy-metadata setuptools \
+            --collect-all magic \
+            --recursive-copy-metadata python-magic \
             --onedir \
             --console \
             --noconfirm \

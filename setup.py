@@ -73,7 +73,9 @@ setup(
         'markdown-customblocks==1.5.4',
         'pymdown-extensions==10.19.1',
         'watchdog==6.0.0',
-        'Pillow==12.0.0'
+        'Pillow==12.0.0',
+        'python-magic-bin==0.4.14; sys_platform == "win32"',
+        'python-magic==0.4.27; sys_platform != "win32"'
     ],
     extras_require={
         'dev': [
@@ -92,8 +94,7 @@ setup(
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
         'Programming Language :: Python :: 3.14',
-        'Operating System :: OS Independent',
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Operating System :: OS Independent'
     ],
     license='GPL-3.0-or-later',
     entry_points={
