@@ -59,14 +59,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install Bestatic
           pip install pyinstaller
+
+      - name: Install libmagic (System Dependency)
+        run: brew install libmagic
       
       - name: Build with PyInstaller
         run: |
+          # Find libmagic path dynamically
+          LIBMAGIC_PATH=$(brew --prefix libmagic)/lib/libmagic.dylib
+          echo "Found libmagic at: $LIBMAGIC_PATH"
+
           cd bestatic
           pyinstaller \
+            --add-binary "$LIBMAGIC_PATH:." \
             --collect-all bestatic \
             --recursive-copy-metadata Bestatic \
             --collect-all customblocks \
+            --hidden-import yamlns \
             --collect-all markdown \
             --recursive-copy-metadata mkdocs-material \
             --recursive-copy-metadata mkdocs \
@@ -296,3 +305,4 @@ jobs:
             installer_output/bestatic_v*.pkg.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          

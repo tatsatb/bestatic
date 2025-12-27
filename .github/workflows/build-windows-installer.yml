@@ -76,7 +76,7 @@ jobs:
               'bestatic', 'markdown', 'mkdocs', 'material', 'bs4', 
               'pymdown-extensions', 'pygments', 'jinja2', 'watchdog',
               'chardet', 'markdown_include', 'tomli', 'pillow', 
-              'soupsieve', 'setuptools', 'magic'
+              'soupsieve', 'setuptools', 'magic', 'yamlns'
           ]
           
           for package in packages:

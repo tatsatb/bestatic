@@ -35,7 +35,7 @@ def get_version():
                     return line.split("=")[1].strip().strip('"').strip("'")
 
     # Fall back to default version
-    return "0.0.33"
+    return "0.0.35"
 
 
 # Read the contents of README file

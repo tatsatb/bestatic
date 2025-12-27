@@ -10,6 +10,20 @@ import multiprocessing
 import watchdog.events
 import watchdog.observers
 
+
+# --- CRITICAL FIX START ---
+# We add the internal extraction directory to the PATH so 'python-magic' 
+# can find the bundled DLLs (libmagic.dll, etc.) on Windows.
+if getattr(sys, 'frozen', False):
+    bundle_dir = sys._MEIPASS
+    os.environ['PATH'] += os.pathsep + bundle_dir
+    
+    # macOS specific: also set DYLD_LIBRARY_PATH for safety
+    current_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
+    os.environ['DYLD_LIBRARY_PATH'] = bundle_dir + os.pathsep + current_dyld
+# --- CRITICAL FIX END ---
+
+
 # Add parent directory to path when running as script
 if __name__ == '__main__' and __package__ is None:
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
