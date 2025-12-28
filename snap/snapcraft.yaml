@@ -62,4 +62,6 @@ apps:
       - home
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET
+      MAGIC: $SNAP/usr/lib/file/magic.mgc
+      
 
