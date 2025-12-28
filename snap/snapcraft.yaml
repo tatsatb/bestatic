@@ -1,6 +1,6 @@
 name: bestatic # you probably want to 'snapcraft register <name>'
 base: core22 # the base snap is the execution environment for this snap
-version: '0.0.31' # just for humans, typically '1.2+git' or '1.3.2'
+version: '0.0.36' # just for humans, typically '1.2+git' or '1.3.2'
 summary: A simple but really powerful static-site generator. # 79 char long summary
 description: |  
     ## ✅ 📚 Detailed documentation is available on the [official website](https://www.bestaticpy.com/).  
@@ -47,7 +47,9 @@ parts:
     source: .
     plugin: python
     python-packages:
-    - Bestatic==0.0.31
+    - Bestatic==0.0.36
+    stage-packages:
+    - libmagic1
 
 
 apps:
