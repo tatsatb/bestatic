@@ -11,7 +11,9 @@
   <url type="homepage">https://www.bestaticpy.com/</url>
   
   <description>
-    <p>Bestatic is a simple but powerful static-site generator that you can install graphically without worrying about dependencies. It can simply turn your text files into fully functional websites and blogs.</p>
+    <p>Bestatic is a simple but powerful static-site generator that you can install <em>graphically</em> without worrying about dependencies, on Windows, macOS, and Linux, running on any x86_64 and ARM architectures. It can simply turn your text files into fully functional websites and blogs.</p>
+    
+    <p><em>Any prior knowledge in Python is not required. Neither is any prior knowledge in dependency or environment management.</em></p>
     
     <p>It is really minimal yet feature-rich. Like every other static-site generator, it can generate a complete website by processing a bunch of markdown files. As a result, it eliminates the need for server-side programming, databases, and constant security updates. The site that <em>Bestatic</em> generates can be served from any web server or host (or even from Git-based platforms, for completely free).</p>
 
@@ -21,10 +23,10 @@
     <em>Blog-aware</em>. You can easily create your blog/news page along with your website. Customizable list pages for blog posts, reverse chronological order of posts, tags, comments (using Giscus or Disqus), fully customizable URL structures, RSS feeds - All standard good stuff are already included.
     </li>
     <li>
-    <em>Feature-rich</em>. Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? Configurable navigation? Custom taxonomies (categories, multiple authors, etc.)? We have all these things built-in. Oh yes, unlike many other static-site generators, our multi-column content layout work out of the box.
+    <em>Feature-rich out of the box 🎁</em>. Want LaTeX support? Syntax highlighting for code? Powerful search functionality? Auto-reloading server? Configurable navigation? Custom taxonomies (categories, multiple authors, etc.)? Image optimization? Custom handling of CSV and YAML data? We have all these things built-in. Oh yes, unlike many other static-site generators, our multi-column content layout work out of the box.
     </li>
     <li>
-    <em>Flexible and extensible</em>. Want to configure things in your way? Use simple yaml files. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. Want to use different markdown plugins or maybe your own custom shortcode? All of these things can de done pretty easily, without any prior knowledge.
+    <em>Flexible and extensible ✨</em>. Want to configure things in your way? Use simple yaml files. Want to use command line? Use our CLI options. Want to theme in your own way? Use standard Jinja2 templating to design freely. Want to use different markdown plugins or maybe your own custom shortcode? All of these things can de done pretty easily, without any prior knowledge or experience.
     </li>
     <li>
     <em>Scalable</em>. Bestatic ultimately builds a bunch of static files. So, no need for database management, server maintenance, or constant security updates. A hassle-free way to manage large-scale websites.
@@ -33,9 +35,11 @@
     <em>Free and open-source</em>. Of course, Bestatic is free and open-source, licensed under GNU GPL-3.0. This will remain free and open-source forever.
     </li>
     <li>
-    <em>Simple</em>. Making things simple for you is our goal. Be it via graphical installation, OS compatibility, dedicated quickstart, or in-depth documentation: We just want to make your Bestatic journey easy and enjoyable for the beginning! For detailed documentation please visit our website at bestaticpy.com.
+    <em>Simple</em>. Making things simple for you is our goal. Be it via graphical installation, compatibility across operating systems and hardware architectures, dedicated quickstart, or in-depth documentation: We just want to make your Bestatic journey easy and enjoyable for the beginning!
     </li>
     </ul>
+    
+    <p><em>Getting started</em>: Want to try Bestatic? Download and install it from the release page (separate native installers for Windows, macOS, and Linux) https://github.com/tatsatb/bestatic/releases/latest, or Snap store, or Flathub, or PyPI. Detailed installation instructions, quickstart guide, and user manual are available on our official documentation at https://www.bestaticpy.com.</p>
   </description>
 
   <developer id="in.tatsatbanerjee">
@@ -43,6 +47,42 @@
   </developer>
 
   <releases>
+
+    <release version="0.0.36" date="2025-12-27">
+      <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.36</url>
+      <description>
+        <p>Release v0.0.36 should be considered as a major release of Bestatic. This is probably a relatively stable version that should work on both x86-64 and arm64 architectures, running Windows, macOS, or Linux.</p>
+        
+        <p>
+        <em>New Features:</em>
+        </p>
+        <ul>
+        <li><em>New GUI Installer for macOS</em>: We have brand new GUI based .pkg installer for macOS (separate native packages for Intel and Apple Silicon). In proper Bestatic style, everything is included in a single-executable. Mac users no longer needs to tinker with homebrew/pipx/command line, if they choose not to (of course, CLI is still a valid installation option).</li>
+        <li><em>Customizable Port Number</em>: During local testing, users can now specify their port number of choice via --portnumber or -n flag. Previously it was hard coded to 8080 (which is still the default, if that flag is not specified).</li>
+        <li><em>Miscellaneous keys</em> can now be added to the bestatic.yaml config file (with extra_data key and any nested keys of choice) and Bestatic will now pass it properly to the templates. This can be really valuable in generating second navigation bar.</li>
+        <li><em>Custom Data Handling</em>: In addition to custom description of taxonomies (via _includes/yamls folder), Bestatic can now process user provided CSV and YAML data and pass the structured data theme templates. With proper themes, webpages can be generated with minimal markdown for repetitive/structured content.</li>
+        <li><em>Image Optimization module</em> is now available in Bestatic out of the box. This is currently an experimental feature that can be used to optimize image size by automatically converting all images to .webp format. While this would make site builds a bit slower, especially for large images, it would make sites much faster to load.</li>
+        <li>A <em>test Suite</em> has been added to the codebase.</li>
+        <li>Linux users who prefer not to use flatpak or snap, can now use native linux installers. The install.sh and uninstall.sh are provided inside the tarball.</li>
+        <li><em>Version Updates</em>: Majority of the Python packages have been updated to the newest version. Bestatic now supports Python 3.10-3.14 (all currently maintained Python versions).</li>
+        </ul>
+        
+        <p>
+        <em>Bug fixes:</em>
+        </p>
+        <ul>
+        <li>Quickstart now works even it is tried with a theme other than "Amazing". Fixes issues https://github.com/tatsatb/bestatic/issues/6 and https://github.com/tatsatb/bestatic/issues/7.</li>
+        <li>Blog pagination has been fixed and more than one pages can be created (it broke during the last release).</li>
+        <li>Navigation can be correctly configured via Nav parameter, even if separate homepage template is used now.</li>
+        </ul>
+        
+        <p> <em>NOTE: Documentation and themes will be updated soon.</em> Themes are available at the themes repo. Detailed documentation is available at the official website.</p>
+        <p>As usual, Bestatic can be downloaded and installed from the GitHub release page, or Snap store, or Flathub, or PyPI.</p>
+        <p>As always, thank you very much for trying Bestatic. ❤️❤️</p>
+        <p><em>Full Changelog</em>: https://github.com/tatsatb/bestatic/compare/v0.0.30...v0.0.36</p>
+      </description>
+    </release>
+
     <release version="0.0.30" date="2024-12-27">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.30</url>
       <description>
