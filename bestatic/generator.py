@@ -635,7 +635,7 @@ def generator(**config):
     json_combined_dict = {**json_dict_post, **json_dict_page}
 
     if json_combined_dict:
-        result_dict = [{'uri': f"{value['slug']}", 'title': value['title'] if value['title'] else "Homepage", 'content': value['text']}
+        result_dict = [{'uri': f"/{value['slug']}", 'title': value['title'] if value['title'] else "Homepage", 'content': value['text']}
                    for
                    value
                    in

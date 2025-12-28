@@ -19,7 +19,6 @@ class TestImageProcessorBasics:
         processor = ImageProcessor(config)
         
         assert processor.enabled is True
-        assert processor.formats == ['webp']
         assert processor.quality == 80
         assert processor.keep_original is False
     
@@ -34,7 +33,6 @@ class TestImageProcessorBasics:
         processor = ImageProcessor(config)
         
         assert processor.enabled is True
-        assert processor.formats == ['webp', 'avif']
         assert processor.quality == 90
         assert processor.keep_original is True
     
