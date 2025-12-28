@@ -13,13 +13,19 @@ def quickstart(theme=None):
 
     if not is_exist:
         raise FileNotFoundError(f"Theme directory does not exist! Please make sure a proper theme is present in "
-                                f"themes directory")
+                                f"themes directory. Download themes from https://www.bestaticpy.com/themes/. ")
 
     config_dict = {
         "siteURL": "http://example.org",
         "theme": theme,
         "time_format": "%B %d, %Y",
-        "number_of_pages": 1
+        "number_of_pages": 1,
+        "nav": [
+            {"Home": "/"},
+            {"About": "/about"},
+            {"Contact": "/contact"}
+            {"Blog": "/posts"},
+        ]
     }
 
     fields = ["title", "description"]
@@ -69,8 +75,8 @@ def quickstart(theme=None):
     }
 
     # Create new markdown files
-    markdown_content_post = "Well, hello there, world. This is an example post"
-    markdown_content_page = "This is an example page. Thanks for visiting this website!"
+    markdown_content_post = "Well, hello there, world. This is an example post. Welcome to my blog! Enjoy your stay."
+    markdown_content_page = "This is an example page. Thanks for visiting this website! Have a great day. For more info, explore the website."
 
     post = {}
     page = {}

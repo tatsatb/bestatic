@@ -274,8 +274,8 @@ def generator(**config):
     summary_length = config["summary_length"] if config and "summary_length" in config else 250
     nav = config["nav"] if config and "nav" in config else None
     enable_inject_tag = config ["enable_inject_tag"] if config and "enable_inject_tag" in config else True
-    post_directory_singular = config["post_directory"]["singular"] if config and "post_directory" in config else "post"
-    post_directory_plural = config["post_directory"]["plural"] if config and "post_directory" in config else "posts"
+    post_directory_singular = config["post_directory"]["singular"] if config and "post_directory" in config and "singular" in config["post_directory"] else "post"
+    post_directory_plural = config["post_directory"]["plural"] if config and "post_directory" in config and "plural" in config["post_directory"] else "posts"
     user_input_n = config['number_of_pages'] if config and "number_of_pages" in config else 1
     posts_in_page = config['include_post_in_pages'] if config and "include_post_in_pages" in config else False
     enable_shortcodes = config["SHORTCODES"] if config and "SHORTCODES" in config else False
@@ -437,7 +437,7 @@ def generator(**config):
 
     if os.path.exists(os.path.join(working_directory, "templates", "home.html.jinja2")):
         home_template = env.get_template('home.html.jinja2')
-        home_final = home_template.render(title=site_title, description=site_description, nav=nav, extra_data=extra_data, data_files=data_files)
+        home_final = home_template.render(title=site_title, description=site_description, nav=nav, extra_data=extra_data, data_files=data_files, post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural)
         with open(f"_output/index.html", "w", encoding="utf-8") as file:
             file.write(home_final)
 
@@ -599,7 +599,7 @@ def generator(**config):
                 sections = parse_sections(PAGES[page].content)
 
             if "slug" in PAGES[page].metadata and PAGES[page].metadata['slug'] == 404 and error_template:
-                page_final = error_template.render(title=site_title, description=site_description, nav=nav, extra_data=extra_data, data_files=data_files)
+                page_final = error_template.render(title=site_title, description=site_description, nav=nav, extra_data=extra_data, data_files=data_files, post_directory_singular=post_directory_singular, post_directory_plural=post_directory_plural)
             else:
                 POSTS_SORTED_in_page = POSTS_SORTED if posts_in_page else None                
                 if "template" in PAGES[page].metadata:
