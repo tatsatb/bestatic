@@ -23,7 +23,7 @@ def quickstart(theme=None):
         "nav": [
             {"Home": "/"},
             {"About": "/about"},
-            {"Contact": "/contact"}
+            {"Contact": "/contact"},
             {"Blog": "/posts"},
         ]
     }
