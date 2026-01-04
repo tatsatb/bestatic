@@ -51,8 +51,10 @@
     <release version="0.0.36" date="2025-12-27">
       <url type="details">https://github.com/tatsatb/bestatic/releases/tag/v0.0.36</url>
       <description>
-        <p>Release v0.0.36 should be considered as a major release of Bestatic. This is probably a relatively stable version that should work on both x86-64 and arm64 architectures, running Windows, macOS, or Linux.</p>
+        <p>Release v0.0.36 should be considered as a major release of Bestatic. This is a relatively stable version that should work on both x86-64 and arm64 architectures, running Windows, macOS, or Linux.</p>
         
+        <p><em> IMPORTANT: </em> The documentation for Bestatic has been completely updated and it is now available at the official website. This was a long overdue update and we are glad that it is finally here!!</p> 
+
         <p>
         <em>New Features:</em>
         </p>
@@ -65,8 +67,9 @@
         <li>A <em>test Suite</em> has been added to the codebase.</li>
         <li>Linux users who prefer not to use flatpak or snap, can now use native linux installers. The install.sh and uninstall.sh are provided inside the tarball.</li>
         <li><em>Version Updates</em>: Majority of the Python packages have been updated to the newest version. Bestatic now supports Python 3.10-3.14 (all currently maintained Python versions).</li>
+        <li><em>New Themes</em>: We have added two new themes to the themes repo: bestatic-lab-group and bestatic-lab-group-simple. These themes are designed for academic lab group websites. All other themes have been updated to use the new features as well.</li>
         </ul>
-        
+
         <p>
         <em>Bug fixes:</em>
         </p>
@@ -75,8 +78,7 @@
         <li>Blog pagination has been fixed and more than one pages can be created (it broke during the last release).</li>
         <li>Navigation can be correctly configured via Nav parameter, even if separate homepage template is used now.</li>
         </ul>
-        
-        <p> <em>NOTE: Documentation and themes will be updated soon.</em> Themes are available at the themes repo. Detailed documentation is available at the official website.</p>
+        <p> Themes are available at the themes repo. Detailed documentation is available at the official website.</p>
         <p>As usual, Bestatic can be downloaded and installed from the GitHub release page, or Snap store, or Flathub, or PyPI.</p>
         <p>As always, thank you very much for trying Bestatic. ❤️❤️</p>
         <p><em>Full Changelog</em>: https://github.com/tatsatb/bestatic/compare/v0.0.30...v0.0.36</p>
