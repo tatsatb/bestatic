@@ -18,6 +18,8 @@
 [![Bestatic Themes](https://img.shields.io/badge/Themes-Bestatic%20Themes-646CFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tatsatb/bestatic-themes)
 [![GitHub Release](https://img.shields.io/github/v/release/tatsatb/bestatic?style=for-the-badge&color=blueviolet)](https://github.com/tatsatb/bestatic/releases)
 [![PyPI](https://img.shields.io/pypi/v/Bestatic?style=for-the-badge&color=blue&logo=python&logoColor=white)](https://pypi.org/project/Bestatic)
+[![Snap Version](https://img.shields.io/snapcraft/v/bestatic/latest/stable?style=for-the-badge&color=E95420&logo=snapcraft&logoColor=white)](https://snapcraft.io/bestatic)
+[![Flathub Version](https://img.shields.io/flathub/v/com.bestaticpy.bestatic?style=for-the-badge&color=4A90E2&logo=flathub&logoColor=white)](https://flathub.org/en/apps/com.bestaticpy.bestatic)
 [![License](https://img.shields.io/github/license/tatsatb/bestatic?style=for-the-badge&color=red)](https://github.com/tatsatb/bestatic/blob/main/LICENSE)
 
 
