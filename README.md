@@ -12,6 +12,14 @@
 
 ---
 
+## 💎Overview
+
+[![Documentation](https://img.shields.io/badge/Wiki-Documentation-forestgreen?style=for-the-badge&logo=read-the-docs&logoColor=white)](https://www.bestaticpy.com/docs/)
+[![Bestatic Themes](https://img.shields.io/badge/Themes-Bestatic%20Themes-646CFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/tatsatb/bestatic-themes)
+[![GitHub Release](https://img.shields.io/github/v/release/tatsatb/bestatic?style=for-the-badge&color=blueviolet)](https://github.com/tatsatb/bestatic/releases)
+[![PyPI](https://img.shields.io/pypi/v/Bestatic?style=for-the-badge&color=blue&logo=python&logoColor=white)](https://pypi.org/project/Bestatic)
+[![License](https://img.shields.io/github/license/tatsatb/bestatic?style=for-the-badge&color=red)](https://github.com/tatsatb/bestatic/blob/main/LICENSE)
+
 
 Bestatic is a simple but powerful static-site generator that you can install **graphically** without worrying about dependencies, on Windows, macOS, and Linux, running on any x86_64 and ARM architectures. It can simply turn your text files into fully functional websites and blogs.
 
